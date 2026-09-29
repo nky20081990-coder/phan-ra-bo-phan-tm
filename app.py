@@ -3,161 +3,138 @@ import plotly.graph_objects as go
 import numpy as np
 
 # Cấu hình trang Streamlit hiển thị rộng
-st.set_page_config(layout="wide", page_title="Hệ Thống Phân Rã Phương Tiện 3D Nghiên Cứu")
+st.set_page_config(layout="wide", page_title="Hệ Thống Phân Rã Phương Tiện Chuyên Ngành")
 
-st.title("🔬 HỆ THỐNG PHÂN RÃ PHƯƠNG TIỆN TRỰC QUAN 3D (3D VEHICLE EXPLODED VIEW)")
-st.caption("Ứng dụng Nghiên cứu Kỹ thuật Phương tiện cho Sinh viên | Phát triển bởi Tiến sĩ Nghiên cứu Phương tiện")
+st.title("🚜 HỆ THỐNG PHÂN RÃ PHƯƠNG TIỆN CHUYÊN NGÀNH 3D")
+st.caption("Ứng dụng Nghiên cứu Kỹ thuật cho Sinh viên | Phát triển bởi Tiến sĩ Nghiên cứu Phương tiện")
 
-# 1. Hàm bổ trợ tạo hình khối 3D thực tế (Mesh 3D) cho các bộ phận
-def create_3d_box(center, size, color, name):
-    """Tạo một khối hộp chữ nhật 3D thực tế"""
+# 1. Các hàm toán học tạo lưới bề mặt cong thực tế cho cấu kiện (High-Poly Mesh)
+def generate_cylinder_mesh(center, radius, height, color, name, orientation='X'):
+    """Tạo khối trụ tròn thực tế cho bánh xe, trục động cơ"""
+    cx, cy, cz = center
+    u = np.linspace(0, 2 * np.pi, 30)
+    v = np.linspace(-height/2, height/2, 10)
+    U, V = np.meshgrid(u, v)
+    
+    if orientation == 'X':
+        X = cx + V
+        Y = cy + radius * np.cos(U)
+        Z = cz + radius * np.sin(U)
+    elif orientation == 'Y':
+        X = cx + radius * np.cos(U)
+        Y = cy + V
+        Z = cz + radius * np.sin(U)
+    else:
+        X = cx + radius * np.cos(U)
+        Y = cy + radius * np.sin(U)
+        Z = cz + V
+        
+    return go.Mesh3d(x=X.flatten(), y=Y.flatten(), z=Z.flatten(), color=color, opacity=0.9, name=name, showscale=False)
+
+def generate_curved_body(center, size, color, name, type_shape="car"):
+    """Tạo thân vỏ bo góc khí động học hoàn chỉnh tùy theo loại xe"""
     cx, cy, cz = center
     dx, dy, dz = size[0]/2, size[1]/2, size[2]/2
+    u = np.linspace(0, 2 * np.pi, 30)
+    v = np.linspace(-1, 1, 20)
+    U, V = np.meshgrid(u, v)
     
-    # 8 đỉnh của khối hộp
-    x = [cx-dx, cx+dx, cx+dx, cx-dx, cx-dx, cx+dx, cx+dx, cx-dx]
-    y = [cy-dy, cy-dy, cy+dy, cy+dy, cy-dy, cy-dy, cy+dy, cy+dy]
-    z = [cz-dz, cz-dz, cz-dz, cz-dz, cz+dz, cz+dz, cz+dz, cz+dz]
-    
-    # Các mặt tam giác cấu thành khối hộp (Mesh3d)
-    i = [0, 0, 4, 4, 0, 1, 2, 3, 0, 3, 1, 2]
-    j = [1, 2, 5, 6, 4, 5, 6, 7, 3, 7, 2, 6]
-    k = [2, 3, 6, 7, 5, 1, 7, 4, 4, 4, 5, 5]
-    
-    return go.Mesh3d(x=x, y=y, z=z, i=i, j=j, k=k, color=color, opacity=0.85, name=name, showscale=False)
-
-def create_3d_cylinder(center, radius, height, color, name, orientation='Z'):
-    """Tạo một khối trụ 3D thực tế phục vụ mô phỏng động cơ, bánh xe"""
-    cx, cy, cz = center
-    nb_steps = 20
-    t = np.linspace(0, 2*np.pi, nb_steps)
-    
-    x, y, z = [], [], []
-    # Tạo đường tròn đáy 1 và đáy 2
-    for i in range(nb_steps):
-        if orientation == 'Z':
-            x.append(cx + radius * np.cos(t[i]))
-            y.append(cy + radius * np.sin(t[i]))
-            z.append(cz - height/2)
-        elif orientation == 'X':
-            x.append(cx - height/2)
-            y.append(cy + radius * np.cos(t[i]))
-            z.append(cz + radius * np.sin(t[i]))
-            
-    for i in range(nb_steps):
-        if orientation == 'Z':
-            x.append(cx + radius * np.cos(t[i]))
-            y.append(cy + radius * np.sin(t[i]))
-            z.append(cz + height/2)
-        elif orientation == 'X':
-            x.append(cx + height/2)
-            y.append(cy + radius * np.cos(t[i]))
-            z.append(cz + radius * np.sin(t[i]))
-
-    # Tạo các mặt phẳng nối tam giác
-    i_list, j_list, k_list = [], [], []
-    for i in range(nb_steps - 1):
-        i_list.extend([i, i, i + nb_steps])
-        j_list.extend([i + 1, i + nb_steps, i + 1 + nb_steps])
-        k_list.extend([i + nb_steps, i + 1, i + 1])
+    if type_shape == "car": # Thân vỏ ô tô thuôn mượt
+        X = cx + dx * np.cos(U) * (1 - 0.1 * V**2)
+        Y = cy + dy * V
+        Z = cz + dz * np.sin(U) * (1 - V**2) + (0.2 * V)
+    elif type_shape == "truck_cabin": # Cabin xe tải vuông bo góc
+        X = cx + dx * np.sign(np.cos(U)) * (np.abs(np.cos(U))**0.5)
+        Y = cy + dy * V
+        Z = cz + dz * np.sin(U)
+    else: # Thân xe máy đào hoặc lốc máy xe máy
+        X = cx + dx * np.cos(U)
+        Y = cy + dy * V
+        Z = cz + dz * np.sin(U)
         
-    return go.Mesh3d(x=x, y=y, z=z, i=i_list, j=j_list, k=k_list, color=color, opacity=0.9, name=name, showscale=False)
+    return go.Mesh3d(x=X.flatten(), y=Y.flatten(), z=Z.flatten(), color=color, opacity=0.9, name=name, showscale=False)
 
-# 2. Cơ sở dữ liệu phương tiện hình học 3D hoàn chỉnh (Đã điền đầy đủ tọa độ)
+# 2. Cơ sở dữ liệu cấu trúc phân rã 4 loại phương tiện theo yêu cầu
 VEHICLE_DB = {
-    "Ô tô Động cơ đốt trong (ICE Car)": {
-"Chassis (Thân xe & Khung gầm)": {
-            "type": "box", "size": [2.0, 4.0, 1.0], "base_pos": [0.0, 0.0, 0.0], "dir": [0.0, 0.0, 0.0], "color": "darkgray",
-            "desc": "Bộ khung chịu lực chính, bảo vệ hành khách và là nền tảng cốt lõi để gắn kết tất cả các hệ thống phụ trợ."
-        },
-        "Engine Block (Khối Động cơ V8)": {
-            "type": "cylinder", "radius": 0.5, "height": 1.2, "orientation": "Z", "base_pos": [0.0, 1.5, 0.4], "dir": [0.0, 3.0, 0.8], "color": "crimson",
-            "desc": "Nơi diễn ra quá trình đốt cháy hỗn hợp khí - nhiên liệu, chuyển hóa nhiệt năng thành cơ năng quay trục khuỷu."
-        },
-        "Front Wheels (Hệ thống bánh trước)": {
-            "type": "cylinder", "radius": 0.4, "height": 2.4, "orientation": "X", "base_pos": [0.0, 1.2, -0.4], "dir": [0.0, 1.5, -2.0], "color": "black",
-            "desc": "Đảm nhận vai trò dẫn hướng cho phương tiện và bám dính mặt đường thông qua hệ thống lốp cao su."
-        },
-        "Rear Drivetrain (Hệ thống truyền động sau)": {
-            "type": "box", "size": [1.8, 0.6, 0.5], "base_pos": [0.0, -1.4, -0.3], "dir": [0.0, -3.0, -1.5], "color": "royalblue",
-            "desc": "Bao gồm vi sai và trục các-đăng giúp truyền mô-men xoắn từ động cơ tới các bánh xe chủ động phía sau."
-        }
+    "1. Xe Máy (Motorbike)": {
+        "Khung Sườn & Gá Động Cơ": {"func": generate_curved_body, "args": [[0, 0, 0.3], [0.3, 1.6, 0.8], "silver", "Khung xe", "excavator"], "dir": [0, 0, 2.0], "desc": "Hệ thống chịu lực chính kết nối càng trước và gắp sau."},
+        "Khối Động Cơ Đơn Xilanh": {"func": generate_curved_body, "args": [[0, 0.1, -0.1], [0.4, 0.5, 0.5], "darkgray", "Động cơ", "excavator"], "dir": [0, 1.5, 0], "desc": "Động cơ 4 thì, trục cam đơn sinh công lực truyền tới xích."},
+"Bánh Xe Trước & Phanh Đĩa": {"func": generate_cylinder_mesh, "args": [[0, 0.9, -0.4], 0.45, 0.15, "#1C1A1A", "Bánh Trước", "X"], "dir": [0, 2.5, -0.5], "desc": "Bánh dẫn hướng tích hợp phanh đĩa thủy lực an toàn."},
+        "Bánh Xe Sau & Bộ Truyền Xích": {"func": generate_cylinder_mesh, "args": [[0, -0.9, -0.4], 0.45, 0.18, "#1C1A1A", "Bánh Sau", "X"], "dir": [0, -2.5, -0.5], "desc": "Bánh chủ động nhận lực kéo trực tiếp từ nhông xích xe."}
     },
-    "Máy bay Thương mại (Commercial Airplane)": {
-        "Fuselage (Thân máy bay chính)": {
-            "type": "cylinder", "radius": 0.6, "height": 5.0, "orientation": "Z", "base_pos": [0.0, 0.0, 0.0], "dir": [0.0, 0.0, 0.0], "color": "lightgray",
-            "desc": "Thân chính dạng ống khí động học cao, chứa toàn bộ phi hành đoàn, hành khách và khoang hàng hóa áp suất."
-        },
-        "Main Wings (Cánh nâng khí động học)": {
-            "type": "box", "size": [5.5, 1.2, 0.15], "base_pos": [0.0, -0.5, 0.0], "dir": [0.0, -1.0, 2.5], "color": "white",
-            "desc": "Thiết kế biên dạng cánh đặc biệt tạo ra chênh lệch áp suất (lực nâng Bernoulli) để thắng trọng lực trái đất."
-        },
-        "Jet Turbine (Động cơ phản lực)": {
-            "type": "cylinder", "radius": 0.35, "height": 0.9, "orientation": "Z", "base_pos": [0.0, 1.5, -0.4], "dir": [0.0, 4.0, -1.0], "color": "orangered",
-            "desc": "Hút, nén, đốt cháy dòng khí tốc độ cao để tạo phản lực cực lớn đẩy máy bay tiến về phía trước."
-        }
+    "2. Xe Ô Tô (Sport Car)": {
+        "Thân Vỏ Khí Động Học": {"func": generate_curved_body, "args": [[0, 0, 0.2], [1.8, 3.8, 0.8], "crimson", "Thân Xe", "car"], "dir": [0, 0, 2.5], "desc": "Vỏ xe tối ưu lực cản gió và tạo lực ép xuống mặt đường."},
+        "Khối Động Cơ V8": {"func": generate_cylinder_mesh, "args": [[0, 1.3, 0.3], 0.4, 0.8, "gold", "Động cơ V8", "Z"], "dir": [0, 2.5, 0.5], "desc": "Trái tim hiệu năng cao cung cấp mô-men xoắn lớn cho siêu xe."},
+        "Hệ Thống Bánh Trước": {"func": generate_cylinder_mesh, "args": [[0, 1.1, -0.3], 0.45, 2.2, "#1C1A1A", "Cụm Bánh Trước", "X"], "dir": [0, 1.0, -2.0], "desc": "Cụm bánh xe dẫn hướng đi kèm thước lái cơ cấu độc lập."},
+        "Hệ Thống Trục Truyền Động Sau": {"func": generate_curved_body, "args": [[0, -1.2, -0.2], [1.8, 0.5, 0.4], "royalblue", "Trục Sau", "excavator"], "dir": [0, -2.5, -1.5], "desc": "Cầu sau tích hợp vi sai phân phối lực kéo ra hai bánh."}
+    },
+    "3. Xe Tải (Heavy Truck)": {
+        "Cabin Xe Tải": {"func": generate_curved_body, "args": [[0, 1.2, 0.8], [2.2, 1.4, 1.4], "orange", "Cabin", "truck_cabin"], "dir": [0, 2.5, 1.5], "desc": "Không gian làm việc của tài xế, thiết kế giảm chấn thủy lực."},
+        "Sát Xi & Thùng Xe Tải": {"func": generate_curved_body, "args": [[0, -0.6, 0.6], [2.2, 3.4, 1.2], "darkblue", "Thùng Xe", "excavator"], "dir": [0, -2.5, 2.0], "desc": "Thùng chịu tải trọng lớn liên kết trực tiếp trên hai thanh sát xi sắt."},
+        "Hệ Thống Cầu Chịu Lực & Lốp Kép": {"func": generate_cylinder_mesh, "args": [[0, -0.8, -0.4], 0.55, 2.4, "#1C1A1A", "Trục Bánh Sau", "X"], "dir": [0, 0, -2.0], "desc": "Hệ thống cầu xe tải lớn chịu lực kéo tải trọng nặng."}
+    },
+    "4. Xe Máy Đào (Excavator)": {
+        "Thân Trên & Động Cơ Quay": {"func": generate_curved_body, "args": [[0, 0, 0.5], [2.0, 2.2, 1.0], "yellow", "Thân Máy Đào", "excavator"], "dir": [0, 0, 2.5], "desc": "Cabin điều khiển và cụm động cơ diesel quay 360 độ."},
+"Cần Thủy Lực (Boom & Arm)": {"func": generate_curved_body, "args": [[0, 1.5, 1.0], [0.3, 1.8, 0.4], "darkgray", "Cần Máy Đào", "excavator"], "dir": [0, 3.0, 1.5], "desc": "Hệ thống cần vươn điều khiển động lực học bằng áp suất dầu thủy lực."},
+        "Gáo Múc Cơ Khí (Bucket)": {"func": generate_curved_body, "args": [[0, 2.6, 0.6], [0.6, 0.6, 0.6], "black", "Gáo Múc", "car"], "dir": [0, 4.5, 0.5], "desc": "Cơ cấu công tác trực tiếp dùng để đào, cào múc đất đá."},
+        "Hệ Thống Xích Di Chuyển (Crawler)": {"func": generate_cylinder_mesh, "args": [[0, 0, -0.5], 0.5, 2.2, "dimgray", "Hệ Xích Di Chuyển", "X"], "dir": [0, 0, -2.0], "desc": "Hệ thống dải xích thép giúp máy đào di chuyển địa hình phức tạp."}
     }
 }
 
-# 3. Giao diện điều khiển (Sidebar)
-st.sidebar.header("🕹️ BẢN ĐIỀU KHIỂN HỌC THUẬT")
-selected_vehicle = st.sidebar.selectbox("Chọn phương tiện nghiên cứu:", list(VEHICLE_DB.keys()))
+# 3. Giao diện điều khiển bên trái (Sidebar)
+st.sidebar.header("🕹️ DANH MỤC PHƯƠNG TIỆN")
+selected_vehicle = st.sidebar.selectbox("Chọn phương tiện nghiên cứu kỹ thuật:", list(VEHICLE_DB.keys()))
 
 st.sidebar.subheader("🎛️ Cơ Chế Phân Rã (Exploded View)")
 explode_factor = st.sidebar.slider(
-"Kéo XUỐNG để phân rã / Kéo LÊN để gộp lại:", 
+    "Kéo XUỐNG để phân rã / Kéo LÊN để gộp lại:", 
     min_value=0.0, max_value=1.0, value=0.0, step=0.05
 )
-st.sidebar.info("💡 **Mẹo nghiên cứu:** Di chuột vào hình khối 3D để xem tên cấu kiện, hoặc xoay/phóng to thu nhỏ trực tiếp trên đồ thị.")
+st.sidebar.info("💡 **Gợi ý học tập:** Giữ chuột trái vào mô hình để xoay, con lăn chuột để phóng to thu nhỏ chi tiết xe.")
 
-# 4. Xử lý đồ họa hình khối 3D động dựa trên cấu trúc phân rã
+# 4. Tính toán và vẽ mô hình đa giác 3D động
 fig = go.Figure()
 components = VEHICLE_DB[selected_vehicle]
 
 for comp_name, info in components.items():
-    # Tính toán vị trí tịnh tiến phân rã động bằng phương pháp nội suy tuyến tính
-    base = np.array(info["base_pos"])
-    direction = np.array(info["dir"])
-    current_pos = base + (direction * explode_factor)
+    # Tính ma trận tịnh tiến phân rã nội suy động
+    direction = np.array(info["dir"]) * explode_factor
     
-    # Dựng hình khối 3D thực tế tương ứng
-    if info["type"] == "box":
-        mesh = create_3d_box(current_pos, info["size"], info["color"], comp_name)
-    elif info["type"] == "cylinder":
-        mesh = create_3d_cylinder(current_pos, info["radius"], info["height"], info["color"], comp_name, info["orientation"])
-        
-    fig.add_trace(mesh)
+    # Lấy hàm sinh cấu kiện tương ứng và cộng thêm độ tịnh tiến phân rã
+    args = info["args"].copy()
+    args[0] = (np.array(args[0]) + direction).tolist() # Cập nhật tâm khối mới cho hình học
+    
+    # Thực thi vẽ mesh cấu kiện hoàn chỉnh
+    mesh_trace = info["func"](*args)
+    fig.add_trace(mesh_trace)
 
-# Thiết lập không gian 3D chuẩn phòng thí nghiệm
+# Thiết lập không gian 3D tiêu chuẩn
 fig.update_layout(
     scene=dict(
-        xaxis=dict(range=[-6, 6], title="Trục X"),
-        yaxis=dict(range=[-6, 6], title="Trục Y"),
-        zaxis=dict(range=[-6, 6], title="Trục Z"),
+        xaxis=dict(range=[-6, 6], title="Trục X (Ngang)"),
+        yaxis=dict(range=[-6, 6], title="Trục Y (Dọc)"),
+        zaxis=dict(range=[-6, 6], title="Trục Z (Cao)"),
         aspectmode='cube'
     ),
-    margin=dict(r=0, l=0, b=0, t=30),
-    height=650,
-    showlegend=True
+    margin=dict(r=0, l=0, b=0, t=20),
+    height=650
 )
 
-# 5. Bố cục hiển thị Website
-col1, col2 = st.columns([2, 1])
+# 5. Phân bổ bố cục trang web hiển thị
+col1, col2 = st.columns()
 
 with col1:
-    st.subheader("🌐 Mô Hình Học Thuật Kỹ Thuật 3D")
+    st.subheader(f"🌐 Mô hình 3D hoàn chỉnh: {selected_vehicle[3:]}")
     st.plotly_chart(fig, use_container_width=True)
 
 with col2:
-    st.subheader("📋 Từ Điển Tra Cứu Chức Năng Bộ Phận")
-    st.write("Sinh viên chọn từng mục dưới đây để phân tích sâu công năng chi tiết:")
+    st.subheader("📋 Từ Điển Chức Năng Cấu Kiện Chuyên Ngành")
+    st.write("Sinh viên bấm vào từng mục dưới đây để nghiên cứu công năng cơ khí:")
     
     for comp_name, info in components.items():
         with st.expander(f"🔍 {comp_name}"):
-            st.markdown(f"**Chức năng:** {info['desc']}")
-            # Tính toán vị trí thời gian thực hiển thị tọa độ nghiên cứu kỹ thuật
-            real_pos = np.array(info["base_pos"]) + (np.array(info["dir"]) * explode_factor)
-            st.markdown(f"*Tọa độ khối tâm 3D hiện tại:* `X: {real_pos[0]:.2f} | Y: {real_pos[1]:.2f} | Z: {real_pos[2]:.2f}`")
+st.markdown(f"**Chức năng học thuật:** {info['desc']}")
+            st.markdown(f"*Trạng thái cơ cấu:* `Độ phân giải đa giác cao (High-Poly Mesh)`")
 
 st.markdown("---")
-st.markdown("<center>Phòng Thí Nghiệm Cơ Khí Động Lực Học Quốc Gia © 2026</center>", unsafe_allow_html=True)
+st.markdown("<center>Phòng Nghiên cứu Kỹ thuật Hệ thống Phương tiện Động lực Quốc gia © 2026</center>", unsafe_allow_html=True)
