@@ -1,823 +1,163 @@
 import streamlit as st
-import streamlit.components.v1 as components
-
-st.set_page_config(
-    page_title="Phân rã phương tiện 2D",
-    page_icon="🔧",
-    layout="wide"
-)
-
-st.title("🔧 PHÂN RÃ PHƯƠNG TIỆN 2D")
-
-vehicle = st.selectbox(
-    "Chọn phương tiện",
-    ["🏍️ Xe máy", "🚗 Ô tô"]
-)
-
-# =========================================================
-# MÔ HÌNH XE MÁY
-# =========================================================
-
-motorcycle = r"""
-<g id="motorcycle">
-
-    <!-- BÁNH TRƯỚC -->
-    <g class="part"
-       data-name="Bánh trước"
-       data-system="Hệ thống di chuyển"
-       data-function="Giúp xe chuyển động và thay đổi hướng."
-       data-x="0"
-       data-y="-150">
-
-        <circle cx="760" cy="350" r="75"
-                fill="#111827"
-                stroke="#000"
-                stroke-width="8"/>
-
-        <circle cx="760" cy="350" r="35"
-                fill="#94a3b8"/>
-
-        <circle cx="760" cy="350" r="10"
-                fill="#475569"/>
-
-    </g>
-
-
-    <!-- BÁNH SAU -->
-    <g class="part"
-       data-name="Bánh sau"
-       data-system="Hệ thống di chuyển"
-       data-function="Nhận lực từ hệ thống truyền động và tạo chuyển động."
-       data-x="0"
-       data-y="150">
-
-        <circle cx="250" cy="350" r="75"
-                fill="#111827"
-                stroke="#000"
-                stroke-width="8"/>
-
-        <circle cx="250" cy="350" r="35"
-                fill="#94a3b8"/>
-
-        <circle cx="250" cy="350" r="10"
-                fill="#475569"/>
-
-    </g>
-
-
-    <!-- KHUNG XE -->
-    <g class="part"
-       data-name="Khung xe"
-       data-system="Kết cấu"
-       data-function="Liên kết và nâng đỡ các bộ phận chính của xe."
-       data-x="0"
-       data-y="170">
-
-        <line x1="250" y1="350"
-              x2="470" y2="190"
-              stroke="#334155"
-              stroke-width="28"/>
-
-        <line x1="470" y1="190"
-              x2="760" y2="350"
-              stroke="#334155"
-              stroke-width="28"/>
-
-        <line x1="470" y1="190"
-              x2="380" y2="350"
-              stroke="#334155"
-              stroke-width="25"/>
-
-    </g>
-
-
-    <!-- ĐỘNG CƠ -->
-    <g class="part"
-       data-name="Động cơ"
-       data-system="Hệ thống động lực"
-       data-function="Biến đổi năng lượng của nhiên liệu thành cơ năng."
-       data-x="0"
-       data-y="230">
-
-        <rect x="390"
-              y="250"
-              width="170"
-              height="120"
-              rx="20"
-              fill="#64748b"
-              stroke="#1e293b"
-              stroke-width="8"/>
-
-        <circle cx="475"
-                cy="310"
-                r="40"
-                fill="#1e293b"/>
-
-        <circle cx="475"
-                cy="310"
-                r="18"
-                fill="#cbd5e1"/>
-
-    </g>
-
-
-    <!-- BÌNH XĂNG -->
-    <g class="part"
-       data-name="Bình nhiên liệu"
-       data-system="Hệ thống nhiên liệu"
-       data-function="Chứa nhiên liệu cung cấp cho động cơ."
-       data-x="0"
-       data-y="-170">
-
-        <path d="
-            M390 190
-            Q480 120 590 190
-            L560 260
-            L410 260
-            Z"
-            fill="#dc2626"
-            stroke="#7f1d1d"
-            stroke-width="8"/>
-
-    </g>
-
-
-    <!-- YÊN -->
-    <g class="part"
-       data-name="Yên xe"
-       data-system="Thân xe"
-       data-function="Là nơi người điều khiển ngồi."
-       data-x="-80"
-       data-y="-210">
-
-        <rect x="500"
-              y="125"
-              width="220"
-              height="45"
-              rx="20"
-              fill="#111827"/>
-
-    </g>
-
-
-    <!-- TAY LÁI -->
-    <g class="part"
-       data-name="Tay lái"
-       data-system="Hệ thống điều khiển"
-       data-function="Giúp người điều khiển thay đổi hướng chuyển động."
-       data-x="170"
-       data-y="-220">
-
-        <line x1="710"
-              y1="190"
-              x2="770"
-              y2="90"
-              stroke="#111827"
-              stroke-width="18"/>
-
-        <line x1="740"
-              y1="100"
-              x2="850"
-              y2="100"
-              stroke="#111827"
-              stroke-width="18"/>
-
-    </g>
-
-
-    <!-- PHUỘC -->
-    <g class="part"
-       data-name="Phuộc trước"
-       data-system="Hệ thống treo"
-       data-function="Hấp thụ dao động và giữ bánh trước ổn định."
-       data-x="200"
-       data-y="80">
-
-        <line x1="680"
-              y1="180"
-              x2="760"
-              y2="350"
-              stroke="#94a3b8"
-              stroke-width="15"/>
-
-        <line x1="710"
-              y1="180"
-              x2="760"
-              y2="350"
-              stroke="#64748b"
-              stroke-width="15"/>
-
-    </g>
-
-
-    <!-- ỐNG XẢ -->
-    <g class="part"
-       data-name="Ống xả"
-       data-system="Hệ thống xả"
-       data-function="Dẫn khí thải từ động cơ ra ngoài."
-       data-x="-150"
-       data-y="230">
-
-        <rect x="260"
-              y="410"
-              width="330"
-              height="35"
-              rx="18"
-              fill="#475569"/>
-
-        <circle cx="585"
-                cy="427"
-                r="25"
-                fill="#111827"/>
-
-    </g>
-
-
-    <!-- ĐÈN -->
-    <g class="part"
-       data-name="Đèn trước"
-       data-system="Hệ thống điện"
-       data-function="Chiếu sáng phía trước xe."
-       data-x="230"
-       data-y="-100">
-
-        <circle cx="790"
-                cy="185"
-                r="32"
-                fill="#facc15"
-                stroke="#ca8a04"
-                stroke-width="7"/>
-
-    </g>
-
-
-    <!-- XÍCH -->
-    <g class="part"
-       data-name="Xích truyền động"
-       data-system="Hệ thống truyền động"
-       data-function="Truyền chuyển động từ động cơ đến bánh sau."
-       data-x="-180"
-       data-y="100">
-
-        <ellipse cx="330"
-                 cy="350"
-                 rx="90"
-                 ry="40"
-                 fill="none"
-                 stroke="#111827"
-                 stroke-width="12"/>
-
-    </g>
-
-</g>
-"""
-
-
-# =========================================================
-# MÔ HÌNH Ô TÔ
-# =========================================================
-
-car = r"""
-<g id="car">
-
-    <!-- BÁNH TRƯỚC -->
-    <g class="part"
-       data-name="Bánh trước"
-       data-system="Hệ thống di chuyển"
-       data-function="Giúp ô tô di chuyển và thay đổi hướng."
-       data-x="0"
-       data-y="-150">
-
-        <circle cx="250"
-                cy="360"
-                r="70"
-                fill="#111827"
-                stroke="#000"
-                stroke-width="8"/>
-
-        <circle cx="250"
-                cy="360"
-                r="30"
-                fill="#94a3b8"/>
-
-    </g>
-
-
-    <!-- BÁNH SAU -->
-    <g class="part"
-       data-name="Bánh sau"
-       data-system="Hệ thống di chuyển"
-       data-function="Truyền lực xuống mặt đường và giúp xe chuyển động."
-       data-x="0"
-       data-y="150">
-
-        <circle cx="750"
-                cy="360"
-                r="70"
-                fill="#111827"
-                stroke="#000"
-                stroke-width="8"/>
-
-        <circle cx="750"
-                cy="360"
-                r="30"
-                fill="#94a3b8"/>
-
-    </g>
-
-
-    <!-- THÂN XE -->
-    <g class="part"
-       data-name="Thân xe"
-       data-system="Kết cấu"
-       data-function="Bao bọc và liên kết các hệ thống của ô tô."
-       data-x="0"
-       data-y="170">
-
-        <path d="
-            M160 330
-            L220 250
-            L370 230
-            L450 150
-            L650 150
-            L730 230
-            L830 250
-            L860 330
-            Z"
-            fill="#2563eb"
-            stroke="#1e3a8a"
-            stroke-width="8"/>
-
-    </g>
-
-
-    <!-- KÍNH -->
-    <g class="part"
-       data-name="Kính xe"
-       data-system="Thân xe"
-       data-function="Giúp người ngồi bên trong quan sát bên ngoài."
-       data-x="0"
-       data-y="-170">
-
-        <path d="
-            M390 225
-            L455 165
-            L640 165
-            L700 225
-            Z"
-            fill="#93c5fd"
-            stroke="#1e40af"
-            stroke-width="6"/>
-
-    </g>
-
-
-    <!-- ĐỘNG CƠ -->
-    <g class="part"
-       data-name="Động cơ"
-       data-system="Hệ thống động lực"
-       data-function="Tạo công suất để ô tô chuyển động."
-       data-x="0"
-       data-y="230">
-
-        <rect x="520"
-              y="275"
-              width="170"
-              height="80"
-              rx="15"
-              fill="#64748b"
-              stroke="#1e293b"
-              stroke-width="8"/>
-
-    </g>
-
-
-    <!-- GHẾ -->
-    <g class="part"
-       data-name="Ghế xe"
-       data-system="Nội thất"
-       data-function="Là nơi người lái và hành khách ngồi."
-       data-x="0"
-       data-y="-220">
-
-        <rect x="400"
-              y="240"
-              width="100"
-              height="35"
-              rx="10"
-              fill="#111827"/>
-
-        <rect x="540"
-              y="240"
-              width="100"
-              height="35"
-              rx="10"
-              fill="#111827"/>
-
-    </g>
-
-
-    <!-- BÌNH NHIÊN LIỆU -->
-    <g class="part"
-       data-name="Bình nhiên liệu"
-       data-system="Hệ thống nhiên liệu"
-       data-function="Chứa nhiên liệu cung cấp cho động cơ."
-       data-x="-150"
-       data-y="100">
-
-        <rect x="350"
-              y="300"
-              width="100"
-              height="60"
-              rx="12"
-              fill="#dc2626"/>
-
-    </g>
-
-
-    <!-- HỆ THỐNG PHANH -->
-    <g class="part"
-       data-name="Phanh"
-       data-system="Hệ thống an toàn"
-       data-function="Giúp giảm tốc độ và dừng xe."
-       data-x="170"
-       data-y="150">
-
-        <circle cx="750"
-                cy="360"
-                r="28"
-                fill="#ef4444"/>
-
-    </g>
-
-
-    <!-- ĐÈN -->
-    <g class="part"
-       data-name="Đèn trước"
-       data-system="Hệ thống điện"
-       data-function="Chiếu sáng phía trước xe."
-       data-x="230"
-       data-y="-100">
-
-        <rect x="820"
-              y="260"
-              width="35"
-              height="55"
-              rx="10"
-              fill="#facc15"/>
-
-    </g>
-
-
-    <!-- HỆ THỐNG LÁI -->
-    <g class="part"
-       data-name="Hệ thống lái"
-       data-system="Hệ thống điều khiển"
-       data-function="Điều khiển hướng chuyển động của ô tô."
-       data-x="180"
-       data-y="-250">
-
-        <line x1="760"
-              y1="260"
-              x2="810"
-              y2="180"
-              stroke="#111827"
-              stroke-width="15"/>
-
-    </g>
-
-</g>
-"""
-
-
-# =========================================================
-# CHỌN MÔ HÌNH
-# =========================================================
-
-model = motorcycle if vehicle == "🏍️ Xe máy" else car
-
-
-# =========================================================
-# HTML
-# =========================================================
-
-html = f"""
-<!DOCTYPE html>
-
-<html lang="vi">
-
-<head>
-
-<meta charset="UTF-8">
-
-<style>
-
-body {{
-    margin: 0;
-    background: #e2e8f0;
-    font-family: Arial;
-}}
-
-#box {{
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-}}
-
-svg {{
-    width: 100%;
-    height: 520px;
-    background: #f8fafc;
-    border-radius: 15px;
-}}
-
-.part {{
-    cursor: pointer;
-
-    transition:
-        transform 0.08s linear,
-        opacity 0.2s;
-}}
-
-.part:hover {{
-    opacity: 0.65;
-}}
-
-#slider {{
-    width: 100%;
-}}
-
-#percent {{
-    text-align: center;
-    font-size: 25px;
-    font-weight: bold;
-    margin: 10px;
-}}
-
-button {{
-    border: 0;
-    padding: 10px 15px;
-    border-radius: 8px;
-    margin: 5px;
-    cursor: pointer;
-}}
-
-#info {{
-    display: none;
-    background: #eff6ff;
-    border-left: 5px solid #2563eb;
-    padding: 15px;
-    margin-top: 15px;
-    border-radius: 8px;
-}}
-
-</style>
-
-</head>
-
-
-<body>
-
-<div id="box">
-
-<h2>
-{vehicle}
-</h2>
-
-<p>
-<strong>
-Kéo thanh trượt để phân tách / lắp ráp phương tiện
-</strong>
-</p>
-
-
-<svg
-    id="model"
-    viewBox="0 0 1000 500"
->
-
-{model}
-
-</svg>
-
-
-<br>
-
-
-<input
-    id="slider"
-    type="range"
-    min="0"
-    max="100"
-    value="0"
->
-
-
-<div id="percent">
-0%
-</div>
-
-
-<button onclick="setValue(0)">
-🔄 LẮP HOÀN CHỈNH
-</button>
-
-
-<button onclick="setValue(100)">
-🔧 THÁO HOÀN TOÀN
-</button>
-
-
-<div id="info">
-
-<h3 id="name"></h3>
-
-<p>
-<b>Hệ thống:</b>
-<span id="system"></span>
-</p>
-
-<p>
-<b>Chức năng:</b>
-<span id="function"></span>
-</p>
-
-</div>
-
-</div>
-
-
-<script>
-
-
-// ===============================================
-// LẤY CÁC BỘ PHẬN
-// ===============================================
-
-const parts =
-document.querySelectorAll(".part");
-
-const slider =
-document.getElementById("slider");
-
-const percent =
-document.getElementById("percent");
-
-
-// ===============================================
-// PHÂN TÁCH
-// ===============================================
-
-function update(value) {{
-
-    const amount =
-        Number(value) / 100;
-
-
-    percent.innerText =
-        value + "%";
-
-
-    parts.forEach(
-        function(part) {{
-
-            const x =
-                Number(
-                    part.dataset.x
-                );
-
-            const y =
-                Number(
-                    part.dataset.y
-                );
-
-
-            const moveX =
-                x * amount;
-
-            const moveY =
-                y * amount;
-
-
-            part.setAttribute(
-                "transform",
-                "translate(" +
-                moveX +
-                "," +
-                moveY +
-                ")"
-            );
-
-        }}
-    );
-
-}}
-
-
-// ===============================================
-// KÉO THANH TRƯỢT
-// ===============================================
-
-slider.addEventListener(
-    "input",
-    function() {{
-
-        update(
-            this.value
-        );
-
-    }}
-);
-
-
-// ===============================================
-// NÚT
-// ===============================================
-
-function setValue(value) {{
-
-    slider.value =
-        value;
-
-    update(value);
-
-}}
-
-
-// ===============================================
-// THÔNG TIN
-// ===============================================
-
-parts.forEach(
-    function(part) {{
-
-        part.addEventListener(
-            "click",
-            function() {{
-
-                document
-                    .getElementById(
-                        "info"
-                    )
-                    .style.display =
-                    "block";
-
-
-                document
-                    .getElementById(
-                        "name"
-                    )
-                    .innerText =
-                    this.dataset.name;
-
-
-                document
-                    .getElementById(
-                        "system"
-                    )
-                    .innerText =
-                    this.dataset.system;
-
-
-                document
-                    .getElementById(
-                        "function"
-                    )
-                    .innerText =
-                    this.dataset.function;
-
-            }}
-        );
-
+import plotly.graph_objects as go
+import numpy as np
+
+# Cấu hình trang Streamlit hiển thị rộng
+st.set_page_config(layout="wide", page_title="Hệ Thống Phân Rã Phương Tiện 3D Nghiên Cứu")
+
+st.title("🔬 HỆ THỐNG PHÂN RÃ PHƯƠNG TIỆN TRỰC QUAN 3D (3D VEHICLE EXPLODED VIEW)")
+st.caption("Ứng dụng Nghiên cứu Kỹ thuật Phương tiện cho Sinh viên | Phát triển bởi Tiến sĩ Nghiên cứu Phương tiện")
+
+# 1. Hàm bổ trợ tạo hình khối 3D thực tế (Mesh 3D) cho các bộ phận
+def create_3d_box(center, size, color, name):
+    """Tạo một khối hộp chữ nhật 3D thực tế"""
+    cx, cy, cz = center
+    dx, dy, dz = size[0]/2, size[1]/2, size[2]/2
     
-);
+    # 8 đỉnh của khối hộp
+    x = [cx-dx, cx+dx, cx+dx, cx-dx, cx-dx, cx+dx, cx+dx, cx-dx]
+    y = [cy-dy, cy-dy, cy+dy, cy+dy, cy-dy, cy-dy, cy+dy, cy+dy]
+    z = [cz-dz, cz-dz, cz-dz, cz-dz, cz+dz, cz+dz, cz+dz, cz+dz]
+    
+    # Các mặt tam giác cấu thành khối hộp (Mesh3d)
+    i = [0, 0, 4, 4, 0, 1, 2, 3, 0, 1, 4, 5]
+    j = [1, 2, 5, 6, 1, 5, 6, 2, 3, 2, 7, 6]
+    k = [2, 3, 6, 7, 4, 4, 5, 5, 7, 6, 5, 4]
+    
+    return go.Mesh3d(x=x, y=y, z=z, i=i, j=j, k=k, color=color, opacity=0.85, name=name, showscale=False)
 
+def create_3d_cylinder(center, radius, height, color, name, orientation='Z'):
+    """Tạo một khối trụ 3D thực tế phục vụ mô phỏng động cơ, bánh xe"""
+    cx, cy, cz = center
+    nb_steps = 20
+    t = np.linspace(0, 2*np.pi, nb_steps)
+    
+    x, y, z = [], [], []
+    # Tạo đường tròn đáy 1 và đáy 2
+    for i in range(nb_steps):
+        if orientation == 'Z':
+            x.append(cx + radius * np.cos(t[i]))
+            y.append(cy + radius * np.sin(t[i]))
+            z.append(cz - height/2)
+        elif orientation == 'X':
+            x.append(cx - height/2)
+            y.append(cy + radius * np.cos(t[i]))
+            z.append(cz + radius * np.sin(t[i]))
+            
+    for i in range(nb_steps):
+        if orientation == 'Z':
+            x.append(cx + radius * np.cos(t[i]))
+            y.append(cy + radius * np.sin(t[i]))
+            z.append(cz + height/2)
+        elif orientation == 'X':
+            x.append(cx + height/2)
+            y.append(cy + radius * np.cos(t[i]))
+            z.append(cz + radius * np.sin(t[i]))
 
-// ===============================================
-// KHỞI TẠO
-// ===============================================
+    # Tạo các mặt phẳng nối tam giác
+    i_list, j_list, k_list = [], [], []
+    for i in range(nb_steps - 1):
+        i_list.extend([i, i, i + nb_steps])
+        j_list.extend([i + 1, i + nb_steps, i + 1 + nb_steps])
+        k_list.extend([i + nb_steps, i + 1, i + 1])
+        
+    return go.Mesh3d(x=x, y=y, z=z, i=i_list, j=j_list, k=k_list, color=color, opacity=0.9, name=name, showscale=False)
 
-update(0);
+# 2. Cơ sở dữ liệu phương tiện hình học 3D hoàn chỉnh
+VEHICLE_DB = {
+    "Ô tô Động cơ đốt trong (ICE Car)": {
+        "Chassis (Thân xe & Khung gầm)": {
+"type": "box", "size": [2.0, 4.0, 1.0], "base_pos":, "dir":, "color": "darkgray",
+            "desc": "Bộ khung chịu lực chính, bảo vệ hành khách và là nền tảng cốt lõi để gắn kết tất cả các hệ thống phụ trợ."
+        },
+        "Engine Block (Khối Động cơ V8)": {
+            "type": "cylinder", "radius": 0.5, "height": 1.2, "orientation": "Z", "base_pos": [0, 1.5, 0.4], "dir": [0, 3.0, 0.8], "color": "crimson",
+            "desc": "Nơi diễn ra quá trình đốt cháy hỗn hợp khí - nhiên liệu, chuyển hóa nhiệt năng thành cơ năng quay trục khuỷu."
+        },
+        "Front Wheels (Hệ thống bánh trước)": {
+            "type": "cylinder", "radius": 0.4, "height": 2.4, "orientation": "X", "base_pos": [0, 1.2, -0.4], "dir": [0, 1.5, -2.0], "color": "black",
+            "desc": "Đảm nhận vai trò dẫn hướng cho phương tiện và bám dính mặt đường thông qua hệ thống lốp cao su."
+        },
+        "Rear Drivetrain (Hệ thống truyền động sau)": {
+            "type": "box", "size": [1.8, 0.6, 0.5], "base_pos": [0, -1.4, -0.3], "dir": [0, -3.0, -1.5], "color": "royalblue",
+            "desc": "Bao gồm vi sai và trục các-đăng giúp truyền mô-men xoắn từ động cơ tới các bánh xe chủ động phía sau."
+        }
+    },
+    "Máy bay Thương mại (Commercial Airplane)": {
+        "Fuselage (Thân máy bay chính)": {
+            "type": "cylinder", "radius": 0.6, "height": 5.0, "orientation": "Z", "base_pos":, "dir":, "color": "lightgray",
+            "desc": "Thân chính dạng ống khí động học cao, chứa toàn bộ phi hành đoàn, hành khách và khoang hàng hóa áp suất."
+        },
+        "Main Wings (Cánh nâng khí động học)": {
+            "type": "box", "size": [5.5, 1.2, 0.15], "base_pos": [0, -0.5, 0], "dir": [0, -1.0, 2.5], "color": "white",
+            "desc": "Thiết kế biên dạng cánh đặc biệt tạo ra chênh lệch áp suất (lực nâng Bernoulli) để thắng trọng lực trái đất."
+        },
+        "Jet Turbine (Động cơ phản lực)": {
+            "type": "cylinder", "radius": 0.35, "height": 0.9, "orientation": "Z", "base_pos": [0, 1.5, -0.4], "dir": [0, 4.0, -1.0], "color": "orangered",
+            "desc": "Hút, nén, đốt cháy dòng khí tốc độ cao để tạo phản lực cực lớn đẩy máy bay tiến về phía trước."
+        }
+    }
+}
 
-</script>
+# 3. Giao diện điều khiển (Sidebar)
+st.sidebar.header("🕹️ BẢN ĐIỀU KHIỂN HỌC THUẬT")
+selected_vehicle = st.sidebar.selectbox("Chọn phương tiện nghiên cứu:", list(VEHICLE_DB.keys()))
 
-</body>
+st.sidebar.subheader("🎛️ Cơ Chế Phân Rã (Exploded View)")
+explode_factor = st.sidebar.slider(
+    "Kéo XUỐNG để phân rã / Kéo LÊN để gộp lại:", 
+    min_value=0.0, max_value=1.0, value=0.0, step=0.05
+)
+st.sidebar.info("💡 **Mẹo nghiên cứu:** Di chuột vào hình khối 3D để xem tên cấu kiện, hoặc xoay/phóng to thu nhỏ trực tiếp trên đồ thị.")
 
-</html>
-"""
+# 4. Xử lý đồ họa hình khối 3D động dựa trên cấu trúc phân rã
+fig = go.Figure()
+components = VEHICLE_DB[selected_vehicle]
 
+for comp_name, info in components.items():
+    # Tính toán vị trí tịnh tiến phân rã động bằng phương pháp nội suy tuyến tính
+    base = np.array(info["base_pos"])
+    direction = np.array(info["dir"])
+    current_pos = base + (direction * explode_factor)
+    
+    # Dựng hình khối 3D thực tế tương ứng
+    if info["type"] == "box":
+        mesh = create_3d_box(current_pos, info["size"], info["color"], comp_name)
+    elif info["type"] == "cylinder":
+        mesh = create_3d_cylinder(current_pos, info["radius"], info["height"], info["color"], comp_name, info["orientation"])
+        
+    fig.add_trace(mesh)
 
-components.html(
-    html,
-    height=760,
-    scrolling=False
+# Thiết lập không gian 3D chuẩn phòng thí nghiệm
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(range=[-6, 6], title="Trục X"),
+        yaxis=dict(range=[-6, 6], title="Trục Y"),
+        zaxis=dict(range=[-6, 6], title="Trục Z"),
+        aspectmode='cube'
+    ),
+    margin=dict(r=0, l=0, b=0, t=30),
+    height=650,
+    showlegend=True
 )
 
+# 5. Bố cục hiển thị Website
+col1, col2 = st.columns([3, 2])
+
+with col1:
+    st.subheader("🌐 Mô Hình Học Thuật Kỹ Thuật 3D")
+    st.plotly_chart(fig, use_container_width=True)
+
+with col2:
+    st.subheader("📋 Từ Điển Tra Cứu Chức Năng Bộ Phận")
+    st.write("Sinh viên chọn từng mục dưới đây để phân tích sâu công năng chi tiết:")
+    
+    for comp_name, info in components.items():
+        with st.expander(f"🔍 {comp_name}"):
+            st.markdown(f"**Chức năng:** {info['desc']}")
+            # Tính toán vị trí thời gian thực hiển thị tọa độ nghiên cứu kỹ thuật
+            real_pos = np.array(info["base_pos"]) + (np.array(info["dir"]) * explode_factor)
+            st.markdown(f"*Tọa độ khối tâm 3D hiện tại:* `X: {real_pos[0]:.2f} | Y: {real_pos[1]:.2f} | Z: {real_pos[2]:.2f}`")
 
 st.markdown("---")
-
-st.success(
-    "0% = phương tiện nguyên chiếc → "
-    "100% = các bộ phận được phân tách. "
-    "Kéo ngược thanh trượt để lắp lại."
-)
+st.markdown("<center>Phòng Thí Nghiệm Cơ Khí Động Lực Học Quốc Gia © 2026</center>", unsafe_allow_html=True)
