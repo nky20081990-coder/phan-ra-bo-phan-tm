@@ -59,7 +59,7 @@ if xe_chon == "1. Xe Máy (Motorbike)":
     fig.add_trace(ve_banh_xe(0.0, 0.9 + 2.5*explode, -0.4, 0.45, 0.15, "#1C1A1A", "Bánh Trước"))
 fig.add_trace(ve_banh_xe(0.0, -0.9 - 2.5*explode, -0.4, 0.45, 0.18, "#1C1A1A", "Bánh Sau"))
 
-elif xe_chon == "2. Xe Ô Tô (Sport Car)":
+if xe_chon == "2. Xe Ô Tô (Sport Car)":
     MoTaCacBoPhan = {
         "Thân Vỏ Siêu Xe": "Vỏ khí động học bo tròn giúp tối ưu hóa hệ số cản gió đường bệ.",
         "Khối Động Cơ V8": "Hệ thống xi-lanh chữ V cung cấp dải mô-men xoắn hiệu năng cao.",
