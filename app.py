@@ -20,9 +20,9 @@ def create_3d_box(center, size, color, name):
     z = [cz-dz, cz-dz, cz-dz, cz-dz, cz+dz, cz+dz, cz+dz, cz+dz]
     
     # Các mặt tam giác cấu thành khối hộp (Mesh3d)
-    i = [0, 0, 4, 4, 0, 1, 2, 3, 0, 1, 4, 5]
-    j = [1, 2, 5, 6, 1, 5, 6, 2, 3, 2, 7, 6]
-    k = [2, 3, 6, 7, 4, 4, 5, 5, 7, 6, 5, 4]
+    i = [0, 0, 4, 4, 0, 1, 2, 3, 0, 3, 1, 2]
+    j = [1, 2, 5, 6, 4, 5, 6, 7, 3, 7, 2, 6]
+    k = [2, 3, 6, 7, 5, 1, 7, 4, 4, 4, 5, 5]
     
     return go.Mesh3d(x=x, y=y, z=z, i=i, j=j, k=k, color=color, opacity=0.85, name=name, showscale=False)
 
@@ -63,37 +63,37 @@ def create_3d_cylinder(center, radius, height, color, name, orientation='Z'):
         
     return go.Mesh3d(x=x, y=y, z=z, i=i_list, j=j_list, k=k_list, color=color, opacity=0.9, name=name, showscale=False)
 
-# 2. Cơ sở dữ liệu phương tiện hình học 3D hoàn chỉnh
+# 2. Cơ sở dữ liệu phương tiện hình học 3D hoàn chỉnh (Đã điền đầy đủ tọa độ)
 VEHICLE_DB = {
     "Ô tô Động cơ đốt trong (ICE Car)": {
-        "Chassis (Thân xe & Khung gầm)": {
-"type": "box", "size": [2.0, 4.0, 1.0], "base_pos":, "dir":, "color": "darkgray",
+"Chassis (Thân xe & Khung gầm)": {
+            "type": "box", "size": [2.0, 4.0, 1.0], "base_pos": [0.0, 0.0, 0.0], "dir": [0.0, 0.0, 0.0], "color": "darkgray",
             "desc": "Bộ khung chịu lực chính, bảo vệ hành khách và là nền tảng cốt lõi để gắn kết tất cả các hệ thống phụ trợ."
         },
         "Engine Block (Khối Động cơ V8)": {
-            "type": "cylinder", "radius": 0.5, "height": 1.2, "orientation": "Z", "base_pos": [0, 1.5, 0.4], "dir": [0, 3.0, 0.8], "color": "crimson",
+            "type": "cylinder", "radius": 0.5, "height": 1.2, "orientation": "Z", "base_pos": [0.0, 1.5, 0.4], "dir": [0.0, 3.0, 0.8], "color": "crimson",
             "desc": "Nơi diễn ra quá trình đốt cháy hỗn hợp khí - nhiên liệu, chuyển hóa nhiệt năng thành cơ năng quay trục khuỷu."
         },
         "Front Wheels (Hệ thống bánh trước)": {
-            "type": "cylinder", "radius": 0.4, "height": 2.4, "orientation": "X", "base_pos": [0, 1.2, -0.4], "dir": [0, 1.5, -2.0], "color": "black",
+            "type": "cylinder", "radius": 0.4, "height": 2.4, "orientation": "X", "base_pos": [0.0, 1.2, -0.4], "dir": [0.0, 1.5, -2.0], "color": "black",
             "desc": "Đảm nhận vai trò dẫn hướng cho phương tiện và bám dính mặt đường thông qua hệ thống lốp cao su."
         },
         "Rear Drivetrain (Hệ thống truyền động sau)": {
-            "type": "box", "size": [1.8, 0.6, 0.5], "base_pos": [0, -1.4, -0.3], "dir": [0, -3.0, -1.5], "color": "royalblue",
+            "type": "box", "size": [1.8, 0.6, 0.5], "base_pos": [0.0, -1.4, -0.3], "dir": [0.0, -3.0, -1.5], "color": "royalblue",
             "desc": "Bao gồm vi sai và trục các-đăng giúp truyền mô-men xoắn từ động cơ tới các bánh xe chủ động phía sau."
         }
     },
     "Máy bay Thương mại (Commercial Airplane)": {
         "Fuselage (Thân máy bay chính)": {
-            "type": "cylinder", "radius": 0.6, "height": 5.0, "orientation": "Z", "base_pos":, "dir":, "color": "lightgray",
+            "type": "cylinder", "radius": 0.6, "height": 5.0, "orientation": "Z", "base_pos": [0.0, 0.0, 0.0], "dir": [0.0, 0.0, 0.0], "color": "lightgray",
             "desc": "Thân chính dạng ống khí động học cao, chứa toàn bộ phi hành đoàn, hành khách và khoang hàng hóa áp suất."
         },
         "Main Wings (Cánh nâng khí động học)": {
-            "type": "box", "size": [5.5, 1.2, 0.15], "base_pos": [0, -0.5, 0], "dir": [0, -1.0, 2.5], "color": "white",
+            "type": "box", "size": [5.5, 1.2, 0.15], "base_pos": [0.0, -0.5, 0.0], "dir": [0.0, -1.0, 2.5], "color": "white",
             "desc": "Thiết kế biên dạng cánh đặc biệt tạo ra chênh lệch áp suất (lực nâng Bernoulli) để thắng trọng lực trái đất."
         },
         "Jet Turbine (Động cơ phản lực)": {
-            "type": "cylinder", "radius": 0.35, "height": 0.9, "orientation": "Z", "base_pos": [0, 1.5, -0.4], "dir": [0, 4.0, -1.0], "color": "orangered",
+            "type": "cylinder", "radius": 0.35, "height": 0.9, "orientation": "Z", "base_pos": [0.0, 1.5, -0.4], "dir": [0.0, 4.0, -1.0], "color": "orangered",
             "desc": "Hút, nén, đốt cháy dòng khí tốc độ cao để tạo phản lực cực lớn đẩy máy bay tiến về phía trước."
         }
     }
@@ -105,7 +105,7 @@ selected_vehicle = st.sidebar.selectbox("Chọn phương tiện nghiên cứu:",
 
 st.sidebar.subheader("🎛️ Cơ Chế Phân Rã (Exploded View)")
 explode_factor = st.sidebar.slider(
-    "Kéo XUỐNG để phân rã / Kéo LÊN để gộp lại:", 
+"Kéo XUỐNG để phân rã / Kéo LÊN để gộp lại:", 
     min_value=0.0, max_value=1.0, value=0.0, step=0.05
 )
 st.sidebar.info("💡 **Mẹo nghiên cứu:** Di chuột vào hình khối 3D để xem tên cấu kiện, hoặc xoay/phóng to thu nhỏ trực tiếp trên đồ thị.")
@@ -142,7 +142,7 @@ fig.update_layout(
 )
 
 # 5. Bố cục hiển thị Website
-col1, col2 = st.columns([3, 2])
+col1, col2 = st.columns([2, 1])
 
 with col1:
     st.subheader("🌐 Mô Hình Học Thuật Kỹ Thuật 3D")
@@ -161,3 +161,4 @@ with col2:
 
 st.markdown("---")
 st.markdown("<center>Phòng Thí Nghiệm Cơ Khí Động Lực Học Quốc Gia © 2026</center>", unsafe_allow_html=True)
+C
