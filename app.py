@@ -161,4 +161,3 @@ with col2:
 
 st.markdown("---")
 st.markdown("<center>Phòng Thí Nghiệm Cơ Khí Động Lực Học Quốc Gia © 2026</center>", unsafe_allow_html=True)
-C
