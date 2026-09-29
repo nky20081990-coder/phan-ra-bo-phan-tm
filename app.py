@@ -34,7 +34,7 @@ def generate_cylinder_mesh(center, radius, height, color, name, orientation='X')
 def generate_curved_body(center, size, color, name, type_shape="car"):
     """Tạo thân vỏ bo góc khí động học hoàn chỉnh tùy theo loại xe"""
     cx, cy, cz = center
-    dx, dy, dz = size[0]/2, size[1]/2, size[2]/2
+    dx, dy, dz = size/2, size/2, size/2
     u = np.linspace(0, 2 * np.pi, 30)
     v = np.linspace(-1, 1, 20)
     U, V = np.meshgrid(u, v)
@@ -57,27 +57,27 @@ def generate_curved_body(center, size, color, name, type_shape="car"):
 # 2. Cơ sở dữ liệu cấu trúc phân rã 4 loại phương tiện theo yêu cầu
 VEHICLE_DB = {
     "1. Xe Máy (Motorbike)": {
-        "Khung Sườn & Gá Động Cơ": {"func": generate_curved_body, "args": [[0, 0, 0.3], [0.3, 1.6, 0.8], "silver", "Khung xe", "excavator"], "dir": [0, 0, 2.0], "desc": "Hệ thống chịu lực chính kết nối càng trước và gắp sau."},
-        "Khối Động Cơ Đơn Xilanh": {"func": generate_curved_body, "args": [[0, 0.1, -0.1], [0.4, 0.5, 0.5], "darkgray", "Động cơ", "excavator"], "dir": [0, 1.5, 0], "desc": "Động cơ 4 thì, trục cam đơn sinh công lực truyền tới xích."},
-"Bánh Xe Trước & Phanh Đĩa": {"func": generate_cylinder_mesh, "args": [[0, 0.9, -0.4], 0.45, 0.15, "#1C1A1A", "Bánh Trước", "X"], "dir": [0, 2.5, -0.5], "desc": "Bánh dẫn hướng tích hợp phanh đĩa thủy lực an toàn."},
-        "Bánh Xe Sau & Bộ Truyền Xích": {"func": generate_cylinder_mesh, "args": [[0, -0.9, -0.4], 0.45, 0.18, "#1C1A1A", "Bánh Sau", "X"], "dir": [0, -2.5, -0.5], "desc": "Bánh chủ động nhận lực kéo trực tiếp từ nhông xích xe."}
+        "Khung Sườn & Gá Động Cơ": {"func": generate_curved_body, "args": [[0.0, 0.0, 0.3], [0.3, 1.6, 0.8], "silver", "Khung xe", "excavator"], "dir": [0.0, 0.0, 2.0], "desc": "Hệ thống chịu lực chính kết nối càng trước và gắp sau."},
+        "Khối Động Cơ Đơn Xilanh": {"func": generate_curved_body, "args": [[0.0, 0.1, -0.1], [0.4, 0.5, 0.5], "darkgray", "Động cơ", "excavator"], "dir": [0.0, 1.5, 0.0], "desc": "Động cơ 4 thì, trục cam đơn sinh công lực truyền tới xích."},
+"Bánh Xe Trước & Phanh Đĩa": {"func": generate_cylinder_mesh, "args": [[0.0, 0.9, -0.4], 0.45, 0.15, "#1C1A1A", "Bánh Trước", "X"], "dir": [0.0, 2.5, -0.5], "desc": "Bánh dẫn hướng tích hợp phanh đĩa thủy lực an toàn."},
+        "Bánh Xe Sau & Bộ Truyền Xích": {"func": generate_cylinder_mesh, "args": [[0.0, -0.9, -0.4], 0.45, 0.18, "#1C1A1A", "Bánh Sau", "X"], "dir": [0.0, -2.5, -0.5], "desc": "Bánh chủ động nhận lực kéo trực tiếp từ nhông xích xe."}
     },
     "2. Xe Ô Tô (Sport Car)": {
-        "Thân Vỏ Khí Động Học": {"func": generate_curved_body, "args": [[0, 0, 0.2], [1.8, 3.8, 0.8], "crimson", "Thân Xe", "car"], "dir": [0, 0, 2.5], "desc": "Vỏ xe tối ưu lực cản gió và tạo lực ép xuống mặt đường."},
-        "Khối Động Cơ V8": {"func": generate_cylinder_mesh, "args": [[0, 1.3, 0.3], 0.4, 0.8, "gold", "Động cơ V8", "Z"], "dir": [0, 2.5, 0.5], "desc": "Trái tim hiệu năng cao cung cấp mô-men xoắn lớn cho siêu xe."},
-        "Hệ Thống Bánh Trước": {"func": generate_cylinder_mesh, "args": [[0, 1.1, -0.3], 0.45, 2.2, "#1C1A1A", "Cụm Bánh Trước", "X"], "dir": [0, 1.0, -2.0], "desc": "Cụm bánh xe dẫn hướng đi kèm thước lái cơ cấu độc lập."},
-        "Hệ Thống Trục Truyền Động Sau": {"func": generate_curved_body, "args": [[0, -1.2, -0.2], [1.8, 0.5, 0.4], "royalblue", "Trục Sau", "excavator"], "dir": [0, -2.5, -1.5], "desc": "Cầu sau tích hợp vi sai phân phối lực kéo ra hai bánh."}
+        "Thân Vỏ Khí Động Học": {"func": generate_curved_body, "args": [[0.0, 0.0, 0.2], [1.8, 3.8, 0.8], "crimson", "Thân Xe", "car"], "dir": [0.0, 0.0, 2.5], "desc": "Vỏ xe tối ưu lực cản gió và tạo lực ép xuống mặt đường."},
+        "Khối Động Cơ V8": {"func": generate_cylinder_mesh, "args": [[0.0, 1.3, 0.3], 0.4, 0.8, "gold", "Động cơ V8", "Z"], "dir": [0.0, 2.5, 0.5], "desc": "Trái tim hiệu năng cao cung cấp mô-men xoắn lớn cho siêu xe."},
+        "Hệ Thống Bánh Trước": {"func": generate_cylinder_mesh, "args": [[0.0, 1.1, -0.3], 0.45, 2.2, "#1C1A1A", "Cụm Bánh Trước", "X"], "dir": [0.0, 1.0, -2.0], "desc": "Cụm bánh xe dẫn hướng đi kèm thước lái cơ cấu độc lập."},
+        "Hệ Thống Trục Truyền Động Sau": {"func": generate_curved_body, "args": [[0.0, -1.2, -0.2], [1.8, 0.5, 0.4], "royalblue", "Trục Sau", "excavator"], "dir": [0.0, -2.5, -1.5], "desc": "Cầu sau tích hợp vi sai phân phối lực kéo ra hai bánh."}
     },
     "3. Xe Tải (Heavy Truck)": {
-        "Cabin Xe Tải": {"func": generate_curved_body, "args": [[0, 1.2, 0.8], [2.2, 1.4, 1.4], "orange", "Cabin", "truck_cabin"], "dir": [0, 2.5, 1.5], "desc": "Không gian làm việc của tài xế, thiết kế giảm chấn thủy lực."},
-        "Sát Xi & Thùng Xe Tải": {"func": generate_curved_body, "args": [[0, -0.6, 0.6], [2.2, 3.4, 1.2], "darkblue", "Thùng Xe", "excavator"], "dir": [0, -2.5, 2.0], "desc": "Thùng chịu tải trọng lớn liên kết trực tiếp trên hai thanh sát xi sắt."},
-        "Hệ Thống Cầu Chịu Lực & Lốp Kép": {"func": generate_cylinder_mesh, "args": [[0, -0.8, -0.4], 0.55, 2.4, "#1C1A1A", "Trục Bánh Sau", "X"], "dir": [0, 0, -2.0], "desc": "Hệ thống cầu xe tải lớn chịu lực kéo tải trọng nặng."}
+        "Cabin Xe Tải": {"func": generate_curved_body, "args": [[0.0, 1.2, 0.8], [2.2, 1.4, 1.4], "orange", "Cabin", "truck_cabin"], "dir": [0.0, 2.5, 1.5], "desc": "Không gian làm việc của tài xế, thiết kế giảm chấn thủy lực."},
+        "Sát Xi & Thùng Xe Tải": {"func": generate_curved_body, "args": [[0.0, -0.6, 0.6], [2.2, 3.4, 1.2], "darkblue", "Thùng Xe", "excavator"], "dir": [0.0, -2.5, 2.0], "desc": "Thùng chịu tải trọng lớn liên kết trực tiếp trên hai thanh sát xi sắt."},
+        "Hệ Thống Cầu Chịu Lực & Lốp Kép": {"func": generate_cylinder_mesh, "args": [[0.0, -0.8, -0.4], 0.55, 2.4, "#1C1A1A", "Trục Bánh Sau", "X"], "dir": [0.0, 0.0, -2.0], "desc": "Hệ thống cầu xe tải lớn chịu lực kéo tải trọng nặng."}
     },
     "4. Xe Máy Đào (Excavator)": {
-        "Thân Trên & Động Cơ Quay": {"func": generate_curved_body, "args": [[0, 0, 0.5], [2.0, 2.2, 1.0], "yellow", "Thân Máy Đào", "excavator"], "dir": [0, 0, 2.5], "desc": "Cabin điều khiển và cụm động cơ diesel quay 360 độ."},
-"Cần Thủy Lực (Boom & Arm)": {"func": generate_curved_body, "args": [[0, 1.5, 1.0], [0.3, 1.8, 0.4], "darkgray", "Cần Máy Đào", "excavator"], "dir": [0, 3.0, 1.5], "desc": "Hệ thống cần vươn điều khiển động lực học bằng áp suất dầu thủy lực."},
-        "Gáo Múc Cơ Khí (Bucket)": {"func": generate_curved_body, "args": [[0, 2.6, 0.6], [0.6, 0.6, 0.6], "black", "Gáo Múc", "car"], "dir": [0, 4.5, 0.5], "desc": "Cơ cấu công tác trực tiếp dùng để đào, cào múc đất đá."},
-        "Hệ Thống Xích Di Chuyển (Crawler)": {"func": generate_cylinder_mesh, "args": [[0, 0, -0.5], 0.5, 2.2, "dimgray", "Hệ Xích Di Chuyển", "X"], "dir": [0, 0, -2.0], "desc": "Hệ thống dải xích thép giúp máy đào di chuyển địa hình phức tạp."}
+        "Thân Trên & Động Cơ Quay": {"func": generate_curved_body, "args": [[0.0, 0.0, 0.5], [2.0, 2.2, 1.0], "yellow", "Thân Máy Đào", "excavator"], "dir": [0.0, 0.0, 2.5], "desc": "Cabin điều khiển và cụm động cơ diesel quay 360 độ."},
+"Cần Thủy Lực (Boom & Arm)": {"func": generate_curved_body, "args": [[0.0, 1.5, 1.0], [0.3, 1.8, 0.4], "darkgray", "Cần Máy Đào", "excavator"], "dir": [0.0, 3.0, 1.5], "desc": "Hệ thống cần vươn điều khiển động lực học bằng áp suất dầu thủy lực."},
+        "Gáo Múc Cơ Khí (Bucket)": {"func": generate_curved_body, "args": [[0.0, 2.6, 0.6], [0.6, 0.6, 0.6], "black", "Gáo Múc", "car"], "dir": [0.0, 4.5, 0.5], "desc": "Cơ cấu công tác trực tiếp dùng để đào, cào múc đất đá."},
+        "Hệ Thống Xích Di Chuyển (Crawler)": {"func": generate_cylinder_mesh, "args": [[0.0, 0.0, -0.5], 0.5, 2.2, "dimgray", "Hệ Xích Di Chuyển", "X"], "dir": [0.0, 0.0, -2.0], "desc": "Hệ thống dải xích thép giúp máy đào di chuyển địa hình phức tạp."}
     }
 }
 
@@ -100,12 +100,15 @@ for comp_name, info in components.items():
     # Tính ma trận tịnh tiến phân rã nội suy động
     direction = np.array(info["dir"]) * explode_factor
     
-    # Lấy hàm sinh cấu kiện tương ứng và cộng thêm độ tịnh tiến phân rã
-    args = info["args"].copy()
-    args[0] = (np.array(args[0]) + direction).tolist() # Cập nhật tâm khối mới cho hình học
+    # Lấy dữ liệu cơ sở ban đầu
+    base_center = np.array(info["args"][0])
+    
+    # Cập nhật tâm khối mới đã tịnh tiến phân rã
+    new_args = info["args"].copy()
+    new_args[0] = (base_center + direction).tolist()
     
     # Thực thi vẽ mesh cấu kiện hoàn chỉnh
-    mesh_trace = info["func"](*args)
+    mesh_trace = info["func"](*new_args)
     fig.add_trace(mesh_trace)
 
 # Thiết lập không gian 3D tiêu chuẩn
@@ -130,7 +133,6 @@ with col1:
 with col2:
     st.subheader("📋 Từ Điển Chức Năng Cấu Kiện Chuyên Ngành")
     st.write("Sinh viên bấm vào từng mục dưới đây để nghiên cứu công năng cơ khí:")
-    
     for comp_name, info in components.items():
         with st.expander(f"🔍 {comp_name}"):
 st.markdown(f"**Chức năng học thuật:** {info['desc']}")
