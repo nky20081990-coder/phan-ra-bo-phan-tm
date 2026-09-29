@@ -3,31 +3,507 @@ import streamlit.components.v1 as components
 
 st.set_page_config(
     page_title="Phân rã phương tiện 2D",
-    page_icon="🚗",
+    page_icon="🔧",
     layout="wide"
 )
 
 st.title("🔧 PHÂN RÃ PHƯƠNG TIỆN 2D")
-st.write("Mô hình học tập về cấu tạo xe máy và ô tô")
-
-# ==============================
-# CHỌN PHƯƠNG TIỆN
-# ==============================
 
 vehicle = st.selectbox(
-    "🚘 Chọn phương tiện",
-    [
-        "🏍️ Xe máy",
-        "🚗 Ô tô"
-    ]
+    "Chọn phương tiện",
+    ["🏍️ Xe máy", "🚗 Ô tô"]
 )
 
-# ==============================
+# =========================================================
+# MÔ HÌNH XE MÁY
+# =========================================================
+
+motorcycle = r"""
+<g id="motorcycle">
+
+    <!-- BÁNH TRƯỚC -->
+    <g class="part"
+       data-name="Bánh trước"
+       data-system="Hệ thống di chuyển"
+       data-function="Giúp xe chuyển động và thay đổi hướng."
+       data-x="0"
+       data-y="-150">
+
+        <circle cx="760" cy="350" r="75"
+                fill="#111827"
+                stroke="#000"
+                stroke-width="8"/>
+
+        <circle cx="760" cy="350" r="35"
+                fill="#94a3b8"/>
+
+        <circle cx="760" cy="350" r="10"
+                fill="#475569"/>
+
+    </g>
+
+
+    <!-- BÁNH SAU -->
+    <g class="part"
+       data-name="Bánh sau"
+       data-system="Hệ thống di chuyển"
+       data-function="Nhận lực từ hệ thống truyền động và tạo chuyển động."
+       data-x="0"
+       data-y="150">
+
+        <circle cx="250" cy="350" r="75"
+                fill="#111827"
+                stroke="#000"
+                stroke-width="8"/>
+
+        <circle cx="250" cy="350" r="35"
+                fill="#94a3b8"/>
+
+        <circle cx="250" cy="350" r="10"
+                fill="#475569"/>
+
+    </g>
+
+
+    <!-- KHUNG XE -->
+    <g class="part"
+       data-name="Khung xe"
+       data-system="Kết cấu"
+       data-function="Liên kết và nâng đỡ các bộ phận chính của xe."
+       data-x="0"
+       data-y="170">
+
+        <line x1="250" y1="350"
+              x2="470" y2="190"
+              stroke="#334155"
+              stroke-width="28"/>
+
+        <line x1="470" y1="190"
+              x2="760" y2="350"
+              stroke="#334155"
+              stroke-width="28"/>
+
+        <line x1="470" y1="190"
+              x2="380" y2="350"
+              stroke="#334155"
+              stroke-width="25"/>
+
+    </g>
+
+
+    <!-- ĐỘNG CƠ -->
+    <g class="part"
+       data-name="Động cơ"
+       data-system="Hệ thống động lực"
+       data-function="Biến đổi năng lượng của nhiên liệu thành cơ năng."
+       data-x="0"
+       data-y="230">
+
+        <rect x="390"
+              y="250"
+              width="170"
+              height="120"
+              rx="20"
+              fill="#64748b"
+              stroke="#1e293b"
+              stroke-width="8"/>
+
+        <circle cx="475"
+                cy="310"
+                r="40"
+                fill="#1e293b"/>
+
+        <circle cx="475"
+                cy="310"
+                r="18"
+                fill="#cbd5e1"/>
+
+    </g>
+
+
+    <!-- BÌNH XĂNG -->
+    <g class="part"
+       data-name="Bình nhiên liệu"
+       data-system="Hệ thống nhiên liệu"
+       data-function="Chứa nhiên liệu cung cấp cho động cơ."
+       data-x="0"
+       data-y="-170">
+
+        <path d="
+            M390 190
+            Q480 120 590 190
+            L560 260
+            L410 260
+            Z"
+            fill="#dc2626"
+            stroke="#7f1d1d"
+            stroke-width="8"/>
+
+    </g>
+
+
+    <!-- YÊN -->
+    <g class="part"
+       data-name="Yên xe"
+       data-system="Thân xe"
+       data-function="Là nơi người điều khiển ngồi."
+       data-x="-80"
+       data-y="-210">
+
+        <rect x="500"
+              y="125"
+              width="220"
+              height="45"
+              rx="20"
+              fill="#111827"/>
+
+    </g>
+
+
+    <!-- TAY LÁI -->
+    <g class="part"
+       data-name="Tay lái"
+       data-system="Hệ thống điều khiển"
+       data-function="Giúp người điều khiển thay đổi hướng chuyển động."
+       data-x="170"
+       data-y="-220">
+
+        <line x1="710"
+              y1="190"
+              x2="770"
+              y2="90"
+              stroke="#111827"
+              stroke-width="18"/>
+
+        <line x1="740"
+              y1="100"
+              x2="850"
+              y2="100"
+              stroke="#111827"
+              stroke-width="18"/>
+
+    </g>
+
+
+    <!-- PHUỘC -->
+    <g class="part"
+       data-name="Phuộc trước"
+       data-system="Hệ thống treo"
+       data-function="Hấp thụ dao động và giữ bánh trước ổn định."
+       data-x="200"
+       data-y="80">
+
+        <line x1="680"
+              y1="180"
+              x2="760"
+              y2="350"
+              stroke="#94a3b8"
+              stroke-width="15"/>
+
+        <line x1="710"
+              y1="180"
+              x2="760"
+              y2="350"
+              stroke="#64748b"
+              stroke-width="15"/>
+
+    </g>
+
+
+    <!-- ỐNG XẢ -->
+    <g class="part"
+       data-name="Ống xả"
+       data-system="Hệ thống xả"
+       data-function="Dẫn khí thải từ động cơ ra ngoài."
+       data-x="-150"
+       data-y="230">
+
+        <rect x="260"
+              y="410"
+              width="330"
+              height="35"
+              rx="18"
+              fill="#475569"/>
+
+        <circle cx="585"
+                cy="427"
+                r="25"
+                fill="#111827"/>
+
+    </g>
+
+
+    <!-- ĐÈN -->
+    <g class="part"
+       data-name="Đèn trước"
+       data-system="Hệ thống điện"
+       data-function="Chiếu sáng phía trước xe."
+       data-x="230"
+       data-y="-100">
+
+        <circle cx="790"
+                cy="185"
+                r="32"
+                fill="#facc15"
+                stroke="#ca8a04"
+                stroke-width="7"/>
+
+    </g>
+
+
+    <!-- XÍCH -->
+    <g class="part"
+       data-name="Xích truyền động"
+       data-system="Hệ thống truyền động"
+       data-function="Truyền chuyển động từ động cơ đến bánh sau."
+       data-x="-180"
+       data-y="100">
+
+        <ellipse cx="330"
+                 cy="350"
+                 rx="90"
+                 ry="40"
+                 fill="none"
+                 stroke="#111827"
+                 stroke-width="12"/>
+
+    </g>
+
+</g>
+"""
+
+
+# =========================================================
+# MÔ HÌNH Ô TÔ
+# =========================================================
+
+car = r"""
+<g id="car">
+
+    <!-- BÁNH TRƯỚC -->
+    <g class="part"
+       data-name="Bánh trước"
+       data-system="Hệ thống di chuyển"
+       data-function="Giúp ô tô di chuyển và thay đổi hướng."
+       data-x="0"
+       data-y="-150">
+
+        <circle cx="250"
+                cy="360"
+                r="70"
+                fill="#111827"
+                stroke="#000"
+                stroke-width="8"/>
+
+        <circle cx="250"
+                cy="360"
+                r="30"
+                fill="#94a3b8"/>
+
+    </g>
+
+
+    <!-- BÁNH SAU -->
+    <g class="part"
+       data-name="Bánh sau"
+       data-system="Hệ thống di chuyển"
+       data-function="Truyền lực xuống mặt đường và giúp xe chuyển động."
+       data-x="0"
+       data-y="150">
+
+        <circle cx="750"
+                cy="360"
+                r="70"
+                fill="#111827"
+                stroke="#000"
+                stroke-width="8"/>
+
+        <circle cx="750"
+                cy="360"
+                r="30"
+                fill="#94a3b8"/>
+
+    </g>
+
+
+    <!-- THÂN XE -->
+    <g class="part"
+       data-name="Thân xe"
+       data-system="Kết cấu"
+       data-function="Bao bọc và liên kết các hệ thống của ô tô."
+       data-x="0"
+       data-y="170">
+
+        <path d="
+            M160 330
+            L220 250
+            L370 230
+            L450 150
+            L650 150
+            L730 230
+            L830 250
+            L860 330
+            Z"
+            fill="#2563eb"
+            stroke="#1e3a8a"
+            stroke-width="8"/>
+
+    </g>
+
+
+    <!-- KÍNH -->
+    <g class="part"
+       data-name="Kính xe"
+       data-system="Thân xe"
+       data-function="Giúp người ngồi bên trong quan sát bên ngoài."
+       data-x="0"
+       data-y="-170">
+
+        <path d="
+            M390 225
+            L455 165
+            L640 165
+            L700 225
+            Z"
+            fill="#93c5fd"
+            stroke="#1e40af"
+            stroke-width="6"/>
+
+    </g>
+
+
+    <!-- ĐỘNG CƠ -->
+    <g class="part"
+       data-name="Động cơ"
+       data-system="Hệ thống động lực"
+       data-function="Tạo công suất để ô tô chuyển động."
+       data-x="0"
+       data-y="230">
+
+        <rect x="520"
+              y="275"
+              width="170"
+              height="80"
+              rx="15"
+              fill="#64748b"
+              stroke="#1e293b"
+              stroke-width="8"/>
+
+    </g>
+
+
+    <!-- GHẾ -->
+    <g class="part"
+       data-name="Ghế xe"
+       data-system="Nội thất"
+       data-function="Là nơi người lái và hành khách ngồi."
+       data-x="0"
+       data-y="-220">
+
+        <rect x="400"
+              y="240"
+              width="100"
+              height="35"
+              rx="10"
+              fill="#111827"/>
+
+        <rect x="540"
+              y="240"
+              width="100"
+              height="35"
+              rx="10"
+              fill="#111827"/>
+
+    </g>
+
+
+    <!-- BÌNH NHIÊN LIỆU -->
+    <g class="part"
+       data-name="Bình nhiên liệu"
+       data-system="Hệ thống nhiên liệu"
+       data-function="Chứa nhiên liệu cung cấp cho động cơ."
+       data-x="-150"
+       data-y="100">
+
+        <rect x="350"
+              y="300"
+              width="100"
+              height="60"
+              rx="12"
+              fill="#dc2626"/>
+
+    </g>
+
+
+    <!-- HỆ THỐNG PHANH -->
+    <g class="part"
+       data-name="Phanh"
+       data-system="Hệ thống an toàn"
+       data-function="Giúp giảm tốc độ và dừng xe."
+       data-x="170"
+       data-y="150">
+
+        <circle cx="750"
+                cy="360"
+                r="28"
+                fill="#ef4444"/>
+
+    </g>
+
+
+    <!-- ĐÈN -->
+    <g class="part"
+       data-name="Đèn trước"
+       data-system="Hệ thống điện"
+       data-function="Chiếu sáng phía trước xe."
+       data-x="230"
+       data-y="-100">
+
+        <rect x="820"
+              y="260"
+              width="35"
+              height="55"
+              rx="10"
+              fill="#facc15"/>
+
+    </g>
+
+
+    <!-- HỆ THỐNG LÁI -->
+    <g class="part"
+       data-name="Hệ thống lái"
+       data-system="Hệ thống điều khiển"
+       data-function="Điều khiển hướng chuyển động của ô tô."
+       data-x="180"
+       data-y="-250">
+
+        <line x1="760"
+              y1="260"
+              x2="810"
+              y2="180"
+              stroke="#111827"
+              stroke-width="15"/>
+
+    </g>
+
+</g>
+"""
+
+
+# =========================================================
+# CHỌN MÔ HÌNH
+# =========================================================
+
+model = motorcycle if vehicle == "🏍️ Xe máy" else car
+
+
+# =========================================================
 # HTML
-# ==============================
+# =========================================================
 
 html = f"""
 <!DOCTYPE html>
+
 <html lang="vi">
 
 <head>
@@ -38,90 +514,95 @@ html = f"""
 
 body {{
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f1f5f9;
+    background: #e2e8f0;
+    font-family: Arial;
 }}
 
-.container {{
+#box {{
     background: white;
-    border-radius: 15px;
     padding: 20px;
-}}
-
-h2 {{
-    text-align: center;
-}}
-
-#slider {{
-    width: 100%;
-}}
-
-.percent {{
-    text-align: center;
-    font-size: 22px;
-    font-weight: bold;
-}}
-
-button {{
-    padding: 10px 15px;
-    border: none;
-    border-radius: 8px;
-    margin: 5px;
-    cursor: pointer;
+    border-radius: 15px;
 }}
 
 svg {{
     width: 100%;
-    height: 500px;
-    background: #e2e8f0;
+    height: 520px;
+    background: #f8fafc;
     border-radius: 15px;
 }}
 
 .part {{
     cursor: pointer;
-    transition: 0.2s;
+
+    transition:
+        transform 0.08s linear,
+        opacity 0.2s;
 }}
 
 .part:hover {{
     opacity: 0.65;
 }}
 
+#slider {{
+    width: 100%;
+}}
+
+#percent {{
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+    margin: 10px;
+}}
+
+button {{
+    border: 0;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin: 5px;
+    cursor: pointer;
+}}
+
 #info {{
-    margin-top: 15px;
-    padding: 15px;
-    background: #eff6ff;
-    border-radius: 10px;
     display: none;
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 8px;
 }}
 
 </style>
 
 </head>
 
+
 <body>
 
-<div class="container">
+<div id="box">
 
-<h2>{vehicle}</h2>
+<h2>
+{vehicle}
+</h2>
+
+<p>
+<strong>
+Kéo thanh trượt để phân tách / lắp ráp phương tiện
+</strong>
+</p>
+
 
 <svg
-    id="vehicle"
+    id="model"
     viewBox="0 0 1000 500"
 >
 
-<!-- ================================= -->
-<!-- XE MÁY -->
-<!-- ================================= -->
-
-{"".join([]) if vehicle == "🏍️ Xe máy" else ""}
+{model}
 
 </svg>
 
+
 <br>
 
-<label>
-🔧 Mức độ phân rã
-</label>
 
 <input
     id="slider"
@@ -131,31 +612,35 @@ svg {{
     value="0"
 >
 
-<div class="percent">
-    <span id="percent">0</span>%
+
+<div id="percent">
+0%
 </div>
 
-<button onclick="explode(0)">
-    🔄 Lắp hoàn chỉnh
+
+<button onclick="setValue(0)">
+🔄 LẮP HOÀN CHỈNH
 </button>
 
-<button onclick="explode(100)">
-    🔧 Tháo hoàn toàn
+
+<button onclick="setValue(100)">
+🔧 THÁO HOÀN TOÀN
 </button>
+
 
 <div id="info">
 
-    <h3 id="partName"></h3>
+<h3 id="name"></h3>
 
-    <p>
-        <b>Hệ thống:</b>
-        <span id="partSystem"></span>
-    </p>
+<p>
+<b>Hệ thống:</b>
+<span id="system"></span>
+</p>
 
-    <p>
-        <b>Chức năng:</b>
-        <span id="partFunction"></span>
-    </p>
+<p>
+<b>Chức năng:</b>
+<span id="function"></span>
+</p>
 
 </div>
 
@@ -164,6 +649,14 @@ svg {{
 
 <script>
 
+
+// ===============================================
+// LẤY CÁC BỘ PHẬN
+// ===============================================
+
+const parts =
+document.querySelectorAll(".part");
+
 const slider =
 document.getElementById("slider");
 
@@ -171,615 +664,160 @@ const percent =
 document.getElementById("percent");
 
 
-// =====================================
-// DỮ LIỆU BỘ PHẬN
-// =====================================
+// ===============================================
+// PHÂN TÁCH
+// ===============================================
 
-const parts = {{
-
-    // ==========================
-    // BỘ PHẬN XE MÁY
-    // ==========================
-
-    wheel1: {{
-        name: "Bánh trước",
-        system: "Hệ thống di chuyển",
-        function: "Giúp xe di chuyển và thay đổi hướng.",
-        x: 0,
-        y: 0,
-        z: -100
-    }},
-
-    wheel2: {{
-        name: "Bánh sau",
-        system: "Hệ thống di chuyển",
-        function: "Nhận lực truyền động và giúp xe chuyển động.",
-        x: 0,
-        y: 0,
-        z: 100
-    }},
-
-    engine: {{
-        name: "Động cơ",
-        system: "Hệ thống động lực",
-        function: "Biến đổi năng lượng nhiên liệu thành cơ năng.",
-        x: 0,
-        y: 100,
-        z: 0
-    }},
-
-    frame: {{
-        name: "Khung xe",
-        system: "Kết cấu",
-        function: "Liên kết và nâng đỡ các bộ phận của xe.",
-        x: 0,
-        y: -100,
-        z: 0
-    }},
-
-    tank: {{
-        name: "Bình nhiên liệu",
-        system: "Hệ thống nhiên liệu",
-        function: "Chứa nhiên liệu cung cấp cho động cơ.",
-        x: 0,
-        y: -120,
-        z: 0
-    }},
-
-    seat: {{
-        name: "Ghế / Yên",
-        system: "Thân xe",
-        function: "Là nơi người điều khiển hoặc hành khách ngồi.",
-        x: 0,
-        y: 130,
-        z: 0
-    }},
-
-    steering: {{
-        name: "Hệ thống lái",
-        system: "Hệ thống điều khiển",
-        function: "Giúp điều khiển hướng chuyển động.",
-        x: 120,
-        y: 0,
-        z: 0
-    }},
-
-    brake: {{
-        name: "Hệ thống phanh",
-        system: "Hệ thống an toàn",
-        function: "Giúp giảm tốc độ hoặc dừng phương tiện.",
-        x: -120,
-        y: 0,
-        z: 0
-    }}
-
-}};
-
-
-// =====================================
-// HIỂN THỊ THÔNG TIN
-// =====================================
-
-function showInfo(id) {{
-
-    const p = parts[id];
-
-    if (!p)
-        return;
-
-    document.getElementById(
-        "info"
-    ).style.display = "block";
-
-    document.getElementById(
-        "partName"
-    ).innerText = p.name;
-
-    document.getElementById(
-        "partSystem"
-    ).innerText = p.system;
-
-    document.getElementById(
-        "partFunction"
-    ).innerText = p.function;
-}}
-
-
-// =====================================
-// PHÂN RÃ
-// =====================================
-
-function explode(value) {{
-
-    slider.value = value;
-
-    percent.innerText = value;
+function update(value) {{
 
     const amount =
-        value / 100;
+        Number(value) / 100;
 
-    document
-        .querySelectorAll(".part")
-        .forEach(function(part) {{
 
-            const id =
-                part.dataset.id;
+    percent.innerText =
+        value + "%";
 
-            const data =
-                parts[id];
 
-            if (!data)
-                return;
+    parts.forEach(
+        function(part) {{
 
             const x =
-                data.x * amount;
+                Number(
+                    part.dataset.x
+                );
 
             const y =
-                data.y * amount;
+                Number(
+                    part.dataset.y
+                );
+
+
+            const moveX =
+                x * amount;
+
+            const moveY =
+                y * amount;
+
 
             part.setAttribute(
                 "transform",
                 "translate(" +
-                x +
+                moveX +
                 "," +
-                y +
+                moveY +
                 ")"
             );
-        }});
+
+        }}
+    );
+
 }}
 
+
+// ===============================================
+// KÉO THANH TRƯỢT
+// ===============================================
 
 slider.addEventListener(
     "input",
     function() {{
-        explode(this.value);
+
+        update(
+            this.value
+        );
+
     }}
 );
+
+
+// ===============================================
+// NÚT
+// ===============================================
+
+function setValue(value) {{
+
+    slider.value =
+        value;
+
+    update(value);
+
+}}
+
+
+// ===============================================
+// THÔNG TIN
+// ===============================================
+
+parts.forEach(
+    function(part) {{
+
+        part.addEventListener(
+            "click",
+            function() {{
+
+                document
+                    .getElementById(
+                        "info"
+                    )
+                    .style.display =
+                    "block";
+
+
+                document
+                    .getElementById(
+                        "name"
+                    )
+                    .innerText =
+                    this.dataset.name;
+
+
+                document
+                    .getElementById(
+                        "system"
+                    )
+                    .innerText =
+                    this.dataset.system;
+
+
+                document
+                    .getElementById(
+                        "function"
+                    )
+                    .innerText =
+                    this.dataset.function;
+
+            }}
+        );
+
+    }
+);
+
+
+// ===============================================
+// KHỞI TẠO
+// ===============================================
+
+update(0);
 
 </script>
 
 </body>
+
 </html>
 """
 
 
-# ==========================================================
-# TẠO SVG XE MÁY / Ô TÔ
-# ==========================================================
-
-if vehicle == "🏍️ Xe máy":
-
-    motorcycle_svg = """
-    
-    <!-- BÁNH TRƯỚC -->
-
-    <g
-        class="part"
-        data-id="wheel1"
-        onclick="showInfo('wheel1')"
-    >
-
-        <circle
-            cx="230"
-            cy="330"
-            r="70"
-            fill="#111827"
-        />
-
-        <circle
-            cx="230"
-            cy="330"
-            r="35"
-            fill="#cbd5e1"
-        />
-
-    </g>
-
-
-    <!-- BÁNH SAU -->
-
-    <g
-        class="part"
-        data-id="wheel2"
-        onclick="showInfo('wheel2')"
-    >
-
-        <circle
-            cx="750"
-            cy="330"
-            r="70"
-            fill="#111827"
-        />
-
-        <circle
-            cx="750"
-            cy="330"
-            r="35"
-            fill="#cbd5e1"
-        />
-
-    </g>
-
-
-    <!-- KHUNG -->
-
-    <g
-        class="part"
-        data-id="frame"
-        onclick="showInfo('frame')"
-    >
-
-        <line
-            x1="230"
-            y1="330"
-            x2="450"
-            y2="200"
-            stroke="#334155"
-            stroke-width="25"
-        />
-
-        <line
-            x1="450"
-            y1="200"
-            x2="750"
-            y2="330"
-            stroke="#334155"
-            stroke-width="25"
-        />
-
-    </g>
-
-
-    <!-- ĐỘNG CƠ -->
-
-    <g
-        class="part"
-        data-id="engine"
-        onclick="showInfo('engine')"
-    >
-
-        <rect
-            x="420"
-            y="270"
-            width="150"
-            height="100"
-            rx="20"
-            fill="#64748b"
-        />
-
-        <circle
-            cx="495"
-            cy="320"
-            r="35"
-            fill="#1e293b"
-        />
-
-    </g>
-
-
-    <!-- BÌNH XĂNG -->
-
-    <g
-        class="part"
-        data-id="tank"
-        onclick="showInfo('tank')"
-    >
-
-        <ellipse
-            cx="500"
-            cy="180"
-            rx="120"
-            ry="55"
-            fill="#dc2626"
-        />
-
-    </g>
-
-
-    <!-- YÊN -->
-
-    <g
-        class="part"
-        data-id="seat"
-        onclick="showInfo('seat')"
-    >
-
-        <rect
-            x="560"
-            y="120"
-            width="170"
-            height="35"
-            rx="18"
-            fill="#111827"
-        />
-
-    </g>
-
-
-    <!-- TAY LÁI -->
-
-    <g
-        class="part"
-        data-id="steering"
-        onclick="showInfo('steering')"
-    >
-
-        <line
-            x1="730"
-            y1="190"
-            x2="790"
-            y2="100"
-            stroke="#111827"
-            stroke-width="15"
-        />
-
-        <line
-            x1="760"
-            y1="105"
-            x2="840"
-            y2="105"
-            stroke="#111827"
-            stroke-width="15"
-        />
-
-    </g>
-
-
-    <!-- PHANH -->
-
-    <g
-        class="part"
-        data-id="brake"
-        onclick="showInfo('brake')"
-    >
-
-        <circle
-            cx="750"
-            cy="330"
-            r="25"
-            fill="#ef4444"
-        />
-
-    </g>
-
-
-    <!-- ĐÈN -->
-
-    <circle
-        cx="790"
-        cy="190"
-        r="25"
-        fill="#facc15"
-    />
-
-    """
-
-    html = html.replace(
-        '<svg\n id="vehicle"\n viewBox="0 0 1000 500"\n>',
-        '<svg id="vehicle" viewBox="0 0 1000 500">' +
-        motorcycle_svg
-    )
-
-else:
-
-    car_svg = """
-
-    <!-- BÁNH TRƯỚC -->
-
-    <g
-        class="part"
-        data-id="wheel1"
-        onclick="showInfo('wheel1')"
-    >
-
-        <circle
-            cx="250"
-            cy="350"
-            r="65"
-            fill="#111827"
-        />
-
-        <circle
-            cx="250"
-            cy="350"
-            r="28"
-            fill="#cbd5e1"
-        />
-
-    </g>
-
-
-    <!-- BÁNH SAU -->
-
-    <g
-        class="part"
-        data-id="wheel2"
-        onclick="showInfo('wheel2')"
-    >
-
-        <circle
-            cx="750"
-            cy="350"
-            r="65"
-            fill="#111827"
-        />
-
-        <circle
-            cx="750"
-            cy="350"
-            r="28"
-            fill="#cbd5e1"
-        />
-
-    </g>
-
-
-    <!-- KHUNG THÂN -->
-
-    <g
-        class="part"
-        data-id="frame"
-        onclick="showInfo('frame')"
-    >
-
-        <path
-            d="
-            M180 330
-            L220 250
-            L350 240
-            L430 150
-            L650 150
-            L760 240
-            L820 250
-            L850 330
-            Z
-            "
-            fill="#2563eb"
-        />
-
-    </g>
-
-
-    <!-- KÍNH -->
-
-    <path
-        d="
-        M370 235
-        L440 165
-        L635 165
-        L700 235
-        Z
-        "
-        fill="#93c5fd"
-        opacity=".8"
-    />
-
-
-    <!-- GHẾ -->
-
-    <g
-        class="part"
-        data-id="seat"
-        onclick="showInfo('seat')"
-    >
-
-        <rect
-            x="430"
-            y="240"
-            width="110"
-            height="30"
-            rx="10"
-            fill="#111827"
-        />
-
-        <rect
-            x="570"
-            y="240"
-            width="110"
-            height="30"
-            rx="10"
-            fill="#111827"
-        />
-
-    </g>
-
-
-    <!-- ĐỘNG CƠ -->
-
-    <g
-        class="part"
-        data-id="engine"
-        onclick="showInfo('engine')"
-    >
-
-        <rect
-            x="500"
-            y="285"
-            width="160"
-            height="60"
-            rx="10"
-            fill="#64748b"
-        />
-
-    </g>
-
-
-    <!-- BÌNH NHIÊN LIỆU -->
-
-    <g
-        class="part"
-        data-id="tank"
-        onclick="showInfo('tank')"
-    >
-
-        <rect
-            x="400"
-            y="270"
-            width="80"
-            height="40"
-            rx="8"
-            fill="#ef4444"
-        />
-
-    </g>
-
-
-    <!-- HỆ THỐNG LÁI -->
-
-    <g
-        class="part"
-        data-id="steering"
-        onclick="showInfo('steering')"
-    >
-
-        <line
-            x1="760"
-            y1="250"
-            x2="820"
-            y2="170"
-            stroke="#111827"
-            stroke-width="15"
-        />
-
-    </g>
-
-
-    <!-- PHANH -->
-
-    <g
-        class="part"
-        data-id="brake"
-        onclick="showInfo('brake')"
-    >
-
-        <circle
-            cx="750"
-            cy="350"
-            r="25"
-            fill="#ef4444"
-        />
-
-    </g>
-
-    """
-
-    html = html.replace(
-        '<svg\n id="vehicle"\n viewBox="0 0 1000 500"\n>',
-        '<svg id="vehicle" viewBox="0 0 1000 500">' +
-        car_svg
-    )
-
-
 components.html(
     html,
-    height=750,
+    height=760,
     scrolling=False
 )
 
 
 st.markdown("---")
 
-st.info(
-    "Đây là mô hình 2D phục vụ học tập. "
-    "Kéo thanh trượt để quan sát các bộ phận tách ra và bấm vào bộ phận để xem chức năng."
+st.success(
+    "0% = phương tiện nguyên chiếc → "
+    "100% = các bộ phận được phân tách. "
+    "Kéo ngược thanh trượt để lắp lại."
 )
