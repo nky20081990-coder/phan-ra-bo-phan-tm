@@ -59,6 +59,10 @@ VEHICLE_DB = {
     "1. Xe Máy (Motorbike)": {
         "Khung Sườn & Gá Động Cơ": {"func": generate_curved_body, "args": [[0.0, 0.0, 0.3], [0.3, 1.6, 0.8], "silver", "Khung xe", "excavator"], "dir": [0.0, 0.0, 2.0], "desc": "Hệ thống chịu lực chính kết nối càng trước và gắp sau."},
         "Khối Động Cơ Đơn Xilanh": {"func": generate_curved_body, "args": [[0.0, 0.1, -0.1], [0.4, 0.5, 0.5], "darkgray", "Động cơ", "excavator"], "dir": [0.0, 1.5, 0.0], "desc": "Động cơ 4 thì, trục cam đơn sinh công lực truyền tới xích."},
+st.markdown("*Trạng thái cơ cấu:* `Độ phân giải đa giác cao (High-Poly Mesh)`")
+
+st.markdown("---")
+st.markdown("<center>Phòng Nghiên cứu Kỹ thuật Hệ thống Phương tiện Động lực Quốc gia © 2026</center>", unsafe_allow_html=True)
 "Bánh Xe Trước & Phanh Đĩa": {"func": generate_cylinder_mesh, "args": [[0.0, 0.9, -0.4], 0.45, 0.15, "#1C1A1A", "Bánh Trước", "X"], "dir": [0.0, 2.5, -0.5], "desc": "Bánh dẫn hướng tích hợp phanh đĩa thủy lực an toàn."},
         "Bánh Xe Sau & Bộ Truyền Xích": {"func": generate_cylinder_mesh, "args": [[0.0, -0.9, -0.4], 0.45, 0.18, "#1C1A1A", "Bánh Sau", "X"], "dir": [0.0, -2.5, -0.5], "desc": "Bánh chủ động nhận lực kéo trực tiếp từ nhông xích xe."}
     },
@@ -97,17 +101,12 @@ fig = go.Figure()
 components = VEHICLE_DB[selected_vehicle]
 
 for comp_name, info in components.items():
-    # Tính ma trận tịnh tiến phân rã nội suy động
     direction = np.array(info["dir"]) * explode_factor
-    
-    # Lấy dữ liệu cơ sở ban đầu
     base_center = np.array(info["args"][0])
     
-    # Cập nhật tâm khối mới đã tịnh tiến phân rã
     new_args = info["args"].copy()
     new_args[0] = (base_center + direction).tolist()
     
-    # Thực thi vẽ mesh cấu kiện hoàn chỉnh
     mesh_trace = info["func"](*new_args)
     fig.add_trace(mesh_trace)
 
@@ -123,7 +122,7 @@ fig.update_layout(
     height=650
 )
 
-# 5. Phân bổ bố cục trang web hiển thị
+# 5. Phân bổ bố cục trang web hiển thị (Đã sửa lỗi căn lề an toàn)
 col1, col2 = st.columns()
 
 with col1:
@@ -133,10 +132,9 @@ with col1:
 with col2:
     st.subheader("📋 Từ Điển Chức Năng Cấu Kiện Chuyên Ngành")
     st.write("Sinh viên bấm vào từng mục dưới đây để nghiên cứu công năng cơ khí:")
-    for comp_name, info in components.items():
-        with st.expander(f"🔍 {comp_name}"):
-st.markdown(f"**Chức năng học thuật:** {info['desc']}")
-            st.markdown(f"*Trạng thái cơ cấu:* `Độ phân giải đa giác cao (High-Poly Mesh)`")
-
-st.markdown("---")
-st.markdown("<center>Phòng Nghiên cứu Kỹ thuật Hệ thống Phương tiện Động lực Quốc gia © 2026</center>", unsafe_allow_html=True)
+    
+    # Kỹ thuật duyệt an toàn tránh lỗi Indentation
+    for name in list(components.keys()):
+        item_desc = components[name]["desc"]
+        with st.expander(f"🔍 {name}"):
+            st.markdown(f"**Chức năng học thuật:** {item_desc}")
