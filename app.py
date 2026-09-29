@@ -1,104 +1,1152 @@
 import streamlit as st
-import plotly.graph_objects as go
-import numpy as np
+import streamlit.components.v1 as components
 
-# 1. Khởi tạo cấu hình trang hiển thị giao diện rộng
-st.set_page_config(layout="wide", page_title="Hệ Thống Phân Rã Phương Tiện Chuyên Ngành")
-
-st.title("🚜 HỆ THỐNG PHÂN RÃ PHƯƠNG TIỆN CHUYÊN NGÀNH 3D")
-st.caption("Ứng dụng Nghiên cứu Kỹ thuật cho Sinh viên | Phát triển bởi Tiến sĩ Nghiên cứu Phương tiện")
-
-# 2. Hai hàm toán học độc lập dựng hình đa giác bề mặt cong thực tế (High-Poly Mesh)
-def ve_banh_xe(cx, cy, cz, banh_kinh, be_day, mau, ten):
-    u = np.linspace(0, 2 * np.pi, 25)
-    v = np.linspace(-be_day/2, be_day/2, 5)
-    U, V = np.meshgrid(u, v)
-    X = cx + V
-    Y = cy + banh_kinh * np.cos(U)
-    Z = cz + banh_kinh * np.sin(U)
-    return go.Mesh3d(x=X.flatten(), y=Y.flatten(), z=Z.flatten(), color=mau, opacity=0.95, name=ten, showscale=False)
-
-def ve_than_vo(cx, cy, cz, r_x, r_y, r_z, mau, ten):
-    u = np.linspace(0, 2 * np.pi, 25)
-    v = np.linspace(-1, 1, 10)
-    U, V = np.meshgrid(u, v)
-    X = cx + r_x * np.cos(U) * (1 - 0.1 * V**2)
-    Y = cy + r_y * V
-    Z = cz + r_z * np.sin(U) * (1 - V**2) + (0.2 * V)
-    return go.Mesh3d(x=X.flatten(), y=Y.flatten(), z=Z.flatten(), color=mau, opacity=0.9, name=ten, showscale=False)
-
-# 3. Bản điều khiển Menu bên thanh bên (Sidebar)
-st.sidebar.header("🕹️ DANH MỤC PHƯƠNG TIỆN")
-xe_chon = st.sidebar.selectbox(
-    "Chọn phương tiện nghiên cứu:",
-    ["Xe Máy (Motorbike)", "Xe Ô Tô (Sport Car)", "Xe Tải (Heavy Truck)", "Xe Máy Đào (Excavator)"]
+st.set_page_config(
+    page_title="Phòng học 3D - Cấu tạo phương tiện",
+    page_icon="🔧",
+    layout="wide"
 )
 
-exp = st.sidebar.slider("Kéo XUỐNG để phân rã / Kéo LÊN để gộp lại:", min_value=0.0, max_value=1.0, value=0.0, step=0.05)
-st.sidebar.info("💡 Mẹo: Giữ chuột trái vào mô hình để xoay 360 độ trong không gian nhằm bóc tách cơ khí.")
-
-fig = go.Figure()
-ten_bo_phan = []
-mo_ta_bo_phan = []
-
-# 4. Phân nhánh nạp mô hình cơ khí (Sử dụng cấu trúc phẳng tuyến tính an toàn)
-if xe_chon == "Xe Máy (Motorbike)":
-    ten_bo_phan = ["Khung Sườn", "Động Cơ Đơn Xilanh", "Bánh Trước", "Bánh Sau"]
-    mo_ta_bo_phan = ["Hệ thống chịu lực chính kết nối càng trước và gắp sau.", "Động cơ 4 thì sinh công lực trực tiếp truyền tới xích tải.", "Bánh dẫn hướng hệ thống lái đi kèm lốp rãnh bám đường.", "Bánh chủ động nhận lực kéo tịnh tiến từ nhông sên dĩa."]
-    fig.add_trace(ve_than_vo(0.0, 0.0, 0.3 + 2.0*exp, 0.15, 0.8, 0.4, "silver", "Khung Sườn"))
-    fig.add_trace(ve_than_vo(0.0, 0.1, -0.1 + 1.0*exp, 0.2, 0.25, 0.25, "darkgray", "Động Cơ"))
-    fig.add_trace(ve_banh_xe(0.0, 0.9 + 2.5*exp, -0.4, 0.45, 0.15, "#1C1A1A", "Bánh Trước"))
-    fig.add_trace(ve_banh_xe(0.0, -0.9 - 2.5*exp, -0.4, 0.45, 0.18, "#1C1A1A", "Bánh Sau"))
-
-if xe_chon == "Xe Ô Tô (Sport Car)":
-ten_bo_phan = ["Thân Vỏ Siêu Xe", "Khối Động Cơ V8", "Trục Bánh Trước", "Hệ Thống Cầu Sau"]
-    mo_ta_bo_phan = ["Vỏ khí động học bo tròn giúp tối ưu hóa hệ số cản gió đường bệ.", "Hệ thống xi-lanh chữ V cung cấp dải mô-men xoắn hiệu năng cao.", "Cụm bánh xe dẫn hướng đi kèm cơ cấu treo độc lập.", "Cầu truyền động sau tích hợp vi sai chia đều lực kéo."]
-    fig.add_trace(ve_than_vo(0.0, 0.0, 0.2 + 2.5*exp, 0.9, 1.9, 0.4, "crimson", "Thân Vỏ"))
-    fig.add_trace(ve_than_vo(0.0, 1.3, 0.3 + 3.5*exp, 0.3, 0.4, 0.3, "gold", "Động Cơ V8"))
-    fig.add_trace(ve_banh_xe(0.0, 1.1 + 1.5*exp, -0.3 - 1.5*exp, 0.45, 2.2, "#1C1A1A", "Trục Bánh Trước"))
-    fig.add_trace(ve_than_vo(0.0, -1.2 - 2.5*exp, -0.2, 0.9, 0.25, 0.2, "royalblue", "Cầu Sau"))
-
-if xe_chon == "Xe Tải (Heavy Truck)":
-    ten_bo_phan = ["Cabin Đầu Kéo", "Thùng Chứa Hàng", "Trục Bánh Tải Sau"]
-    mo_ta_bo_phan = ["Không gian làm việc của tài xế, kết cấu thép cường độ cao bo góc vuông.", "Thùng thép tải trọng lớn liên kết chắc chắn trên thanh sát xi sắt.", "Cụm lốp kép chịu lực tải trọng nặng từ hàng hóa phía trên."]
-    fig.add_trace(ve_than_vo(0.0, 1.2 + 2.5*exp, 0.8 + 1.0*exp, 1.1, 0.7, 0.7, "orange", "Cabin"))
-    fig.add_trace(ve_than_vo(0.0, -0.6 - 2.5*exp, 0.6 + 2.0*exp, 1.1, 1.7, 0.6, "darkblue", "Thùng Xe"))
-    fig.add_trace(ve_banh_xe(0.0, -0.8, -0.4 - 2.0*exp, 0.55, 2.4, "#1C1A1A", "Trục Bánh Sau"))
-
-if xe_chon == "Xe Máy Đào (Excavator)":
-    ten_bo_phan = ["Thân Máy Điều Khiển", "Cần Thủy Lực", "Gáo Múc Thép", "Hệ Xích Di Chuyển"]
-    mo_ta_bo_phan = ["Mâm quay toa 360 độ chứa cabin vũ đài và động cơ diesel lực lưỡng.", "Cơ cấu tay cần vươn chịu áp suất dầu thủy lực cực lớn.", "Cơ cấu công tác răng thép chuyên dụng cào cuốc đất đá mỏ.", "Hệ băng xích thép chịu lực giúp di chuyển địa hình sình lầy."]
-    fig.add_trace(ve_than_vo(0.0, 0.0, 0.5 + 2.5*exp, 1.0, 1.1, 0.5, "yellow", "Thân Trên Máy"))
-    fig.add_trace(ve_than_vo(0.0, 1.5 + 3.0*exp, 1.0 + 1.5*exp, 0.15, 0.9, 0.2, "gray", "Cần Thủy Lực"))
-    fig.add_trace(ve_than_vo(0.0, 2.6 + 4.5*exp, 0.6 + 0.5*exp, 0.3, 0.3, 0.3, "black", "Gáo Múc"))
-    fig.add_trace(ve_banh_xe(0.0, 0.0, -0.5 - 2.0*exp, 0.5, 2.2, "dimgray", "Băng Xích Thép"))
-
-# 5. Thiết lập trục tọa độ không gian 3D đồ họa
-fig.update_layout(
-    scene=dict(
-        xaxis=dict(range=[-6, 6], title="Trục Ngang X"),
-        yaxis=dict(range=[-6, 6], title="Trục Dọc Y"),
-        zaxis=dict(range=[-6, 6], title="Trục Cao Z"),
-        aspectmode='cube'
-    ),
-    margin=dict(r=0, l=0, b=0, t=20),
-    height=650
+st.title("🔧 PHÒNG HỌC 3D - CẤU TẠO PHƯƠNG TIỆN")
+st.caption(
+    "Khám phá cấu tạo xe máy bằng mô hình 3D. "
+    "Kéo thanh trượt để tháo/lắp các bộ phận."
 )
 
-# 6. Bố cục hiển thị hai cột nội dung trên Website (Đã sửa đổi gọi hàm st.columns(2) chuẩn xác)
-col1, col2 = st.columns(2)
+# =========================================================
+# HTML + THREE.JS
+# =========================================================
 
-with col1:
-    st.subheader(f"🌐 Mô phỏng cấu trúc: {xe_chon}")
-    st.plotly_chart(fig, use_container_width=True)
+html_code = r"""
+<!DOCTYPE html>
+<html lang="vi">
 
-with col2:
-    st.subheader("📋 Từ Điển Chức Năng Bộ Phận Chuyên Ngành")
-    st.write("Sinh viên xem công năng chi tiết từng cấu kiện phương tiện dưới đây:")
-    for i in range(len(ten_bo_phan)):
-        with st.expander(f"🔍 {ten_bo_phan[i]}"):
-            st.write(f"**Chức năng học thuật:** {mo_ta_bo_phan[i]}")
-            st.write("*Trạng thái kết cấu:* `Độ phân giải đa giác cao (High-Poly Mesh)`")
+<head>
+<meta charset="UTF-8">
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #111827;
+}
+
+#viewer {
+    position: relative;
+    width: 100%;
+    height: 760px;
+    overflow: hidden;
+}
+
+#canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+#topbar {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    z-index: 10;
+
+    background: rgba(15, 23, 42, 0.90);
+    color: white;
+
+    padding: 14px;
+    border-radius: 12px;
+}
+
+.title {
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.sub {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin-top: 5px;
+}
+
+#controls {
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    z-index: 10;
+
+    width: 310px;
+
+    background: rgba(15, 23, 42, 0.94);
+    color: white;
+
+    padding: 18px;
+    border-radius: 14px;
+}
+
+#controls label {
+    font-weight: bold;
+}
+
+#explode {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.percent {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+button {
+    border: none;
+    padding: 8px 12px;
+    margin-top: 10px;
+    margin-right: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#reset {
+    background: #e5e7eb;
+}
+
+#full {
+    background: #38bdf8;
+}
+
+#info {
+    position: absolute;
+    top: 105px;
+    right: 15px;
+
+    width: 300px;
+
+    background: rgba(255,255,255,0.96);
+    color: #111827;
+
+    padding: 16px;
+    border-radius: 14px;
+
+    z-index: 10;
+
+    display: none;
+}
+
+#info h3 {
+    margin-top: 0;
+}
+
+#system {
+    display: inline-block;
+    padding: 5px 8px;
+    background: #dbeafe;
+    color: #1e40af;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.help {
+    font-size: 12px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    margin-top: 12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="viewer">
+
+    <div id="topbar">
+        <div class="title">
+            🏍️ MÔ HÌNH 3D - CẤU TẠO XE MÁY
+        </div>
+
+        <div class="sub">
+            Kéo thanh trượt để tháo/lắp các bộ phận •
+            Kéo chuột để xoay • Lăn chuột để phóng to/thu nhỏ •
+            Bấm vào bộ phận để xem thông tin
+        </div>
+    </div>
+
+    <div id="info">
+        <h3 id="partName">Bộ phận</h3>
+        <div id="system">Hệ thống</div>
+
+        <p>
+            <b>Chức năng:</b>
+        </p>
+
+        <p id="partFunction">
+            -
+        </p>
+    </div>
+
+    <div id="controls">
+
+        <label>
+            🔧 Mức độ tháo rã
+        </label>
+
+        <input
+            id="explode"
+            type="range"
+            min="0"
+            max="100"
+            value="0"
+        >
+
+        <div class="percent">
+            <span id="percent">0</span>%
+        </div>
+
+        <button id="reset">
+            ↩ Lắp hoàn chỉnh
+        </button>
+
+        <button id="full">
+            🔧 Tháo hoàn toàn
+        </button>
+
+        <div class="help">
+            • 0%: xe lắp hoàn chỉnh<br>
+            • 50%: tháo một phần<br>
+            • 100%: các bộ phận tách xa nhau<br>
+            • Có thể xoay mô hình bằng chuột
+        </div>
+
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+</div>
+
+
+<script type="module">
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+
+import { OrbitControls } from
+"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js";
+
+
+// =========================================================
+// KHỞI TẠO
+// =========================================================
+
+const canvas = document.getElementById("canvas");
+
+const renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    antialias: true
+});
+
+renderer.setPixelRatio(window.devicePixelRatio);
+
+renderer.setSize(
+    canvas.clientWidth,
+    canvas.clientHeight,
+    false
+);
+
+renderer.shadowMap.enabled = true;
+
+
+// =========================================================
+// CAMERA
+// =========================================================
+
+const camera = new THREE.PerspectiveCamera(
+    45,
+    canvas.clientWidth / canvas.clientHeight,
+    0.1,
+    1000
+);
+
+camera.position.set(
+    8,
+    5,
+    10
+);
+
+
+// =========================================================
+// SCENE
+// =========================================================
+
+const scene = new THREE.Scene();
+
+scene.background = new THREE.Color(
+    0x111827
+);
+
+
+// =========================================================
+// ÁNH SÁNG
+// =========================================================
+
+const ambient = new THREE.AmbientLight(
+    0xffffff,
+    2
+);
+
+scene.add(ambient);
+
+
+const directional = new THREE.DirectionalLight(
+    0xffffff,
+    3
+);
+
+directional.position.set(
+    5,
+    10,
+    8
+);
+
+directional.castShadow = true;
+
+scene.add(directional);
+
+
+// =========================================================
+// ĐIỀU KHIỂN CAMERA
+// =========================================================
+
+const controls = new OrbitControls(
+    camera,
+    renderer.domElement
+);
+
+controls.enableDamping = true;
+
+controls.minDistance = 5;
+controls.maxDistance = 30;
+
+
+// =========================================================
+// MẶT ĐẤT
+// =========================================================
+
+const groundGeometry =
+    new THREE.PlaneGeometry(30, 30);
+
+const groundMaterial =
+    new THREE.MeshStandardMaterial({
+        color: 0x1f2937
+    });
+
+const ground =
+    new THREE.Mesh(
+        groundGeometry,
+        groundMaterial
+    );
+
+ground.rotation.x = -Math.PI / 2;
+
+ground.position.y = -1.5;
+
+scene.add(ground);
+
+
+// =========================================================
+// NHÓM BỘ PHẬN
+// =========================================================
+
+const parts = [];
+
+
+// =========================================================
+// HÀM TẠO BỘ PHẬN
+// =========================================================
+
+function addPart(
+    name,
+    system,
+    functionText,
+    mesh,
+    explodeVector
+) {
+
+    mesh.userData.name = name;
+    mesh.userData.system = system;
+    mesh.userData.function = functionText;
+
+    mesh.userData.originalPosition =
+        mesh.position.clone();
+
+    mesh.userData.explodeVector =
+        explodeVector.clone();
+
+    parts.push(mesh);
+
+    scene.add(mesh);
+
+    return mesh;
+}
+
+
+// =========================================================
+// VẬT LIỆU
+// =========================================================
+
+const black =
+    new THREE.MeshStandardMaterial({
+        color: 0x111111,
+        metalness: 0.5,
+        roughness: 0.35
+    });
+
+const dark =
+    new THREE.MeshStandardMaterial({
+        color: 0x374151,
+        metalness: 0.7,
+        roughness: 0.3
+    });
+
+const metal =
+    new THREE.MeshStandardMaterial({
+        color: 0x9ca3af,
+        metalness: 0.9,
+        roughness: 0.2
+    });
+
+const red =
+    new THREE.MeshStandardMaterial({
+        color: 0xdc2626,
+        metalness: 0.3,
+        roughness: 0.35
+    });
+
+const yellow =
+    new THREE.MeshStandardMaterial({
+        color: 0xfacc15,
+        metalness: 0.2,
+        roughness: 0.3
+    });
+
+
+// =========================================================
+// BÁNH TRƯỚC
+// =========================================================
+
+const wheelGeometry =
+    new THREE.TorusGeometry(
+        1.05,
+        0.18,
+        20,
+        48
+    );
+
+const frontWheel =
+    new THREE.Mesh(
+        wheelGeometry,
+        black
+    );
+
+frontWheel.rotation.y = Math.PI / 2;
+
+frontWheel.position.set(
+    3.0,
+    0,
+    0
+);
+
+addPart(
+    "Bánh trước",
+    "Hệ thống di chuyển",
+    "Bánh trước tiếp xúc với mặt đường và giúp xe chuyển động, đồng thời hỗ trợ định hướng.",
+    frontWheel,
+    new THREE.Vector3(3.5, 0.8, 0)
+);
+
+
+// =========================================================
+// BÁNH SAU
+// =========================================================
+
+const rearWheel =
+    new THREE.Mesh(
+        wheelGeometry,
+        black
+    );
+
+rearWheel.rotation.y = Math.PI / 2;
+
+rearWheel.position.set(
+    -2.5,
+    0,
+    0
+);
+
+addPart(
+    "Bánh sau",
+    "Hệ thống di chuyển",
+    "Bánh sau nhận lực truyền động từ động cơ thông qua hệ thống truyền động.",
+    rearWheel,
+    new THREE.Vector3(-3.5, -0.8, 0)
+);
+
+
+// =========================================================
+// KHUNG XE
+// =========================================================
+
+const frameGeometry =
+    new THREE.BoxGeometry(
+        4.5,
+        0.3,
+        0.35
+    );
+
+const frame =
+    new THREE.Mesh(
+        frameGeometry,
+        dark
+    );
+
+frame.position.set(
+    0,
+    0.9,
+    0
+);
+
+addPart(
+    "Khung xe",
+    "Khung và kết cấu",
+    "Khung xe liên kết các bộ phận chính và chịu tải trong quá trình xe hoạt động.",
+    frame,
+    new THREE.Vector3(0, 2.2, 0)
+);
+
+
+// =========================================================
+// ĐỘNG CƠ
+// =========================================================
+
+const engineGeometry =
+    new THREE.BoxGeometry(
+        1.8,
+        1.3,
+        1.1
+    );
+
+const engine =
+    new THREE.Mesh(
+        engineGeometry,
+        metal
+    );
+
+engine.position.set(
+    -0.2,
+    -0.2,
+    0
+);
+
+addPart(
+    "Động cơ",
+    "Hệ thống động lực",
+    "Động cơ biến đổi năng lượng của nhiên liệu thành cơ năng để tạo ra công suất cho xe.",
+    engine,
+    new THREE.Vector3(0, -2.5, 0)
+);
+
+
+// =========================================================
+// BÌNH NHIÊN LIỆU
+// =========================================================
+
+const tankGeometry =
+    new THREE.SphereGeometry(
+        1.1,
+        24,
+        16
+    );
+
+const tank =
+    new THREE.Mesh(
+        tankGeometry,
+        red
+    );
+
+tank.scale.set(
+    1.5,
+    0.65,
+    0.8
+);
+
+tank.position.set(
+    0.3,
+    1.5,
+    0
+);
+
+addPart(
+    "Bình nhiên liệu",
+    "Hệ thống nhiên liệu",
+    "Bình nhiên liệu chứa nhiên liệu cung cấp cho động cơ.",
+    tank,
+    new THREE.Vector3(0, 3, 0)
+);
+
+
+// =========================================================
+// YÊN XE
+// =========================================================
+
+const seatGeometry =
+    new THREE.BoxGeometry(
+        2.4,
+        0.25,
+        0.9
+    );
+
+const seat =
+    new THREE.Mesh(
+        seatGeometry,
+        black
+    );
+
+seat.position.set(
+    -1.3,
+    1.45,
+    0
+);
+
+addPart(
+    "Yên xe",
+    "Thân xe",
+    "Yên xe là vị trí người điều khiển ngồi trong quá trình sử dụng xe.",
+    seat,
+    new THREE.Vector3(-1.5, 3, 0)
+);
+
+
+// =========================================================
+// TAY LÁI
+// =========================================================
+
+const handleGeometry =
+    new THREE.CylinderGeometry(
+        0.08,
+        0.08,
+        2.0,
+        16
+    );
+
+const handle =
+    new THREE.Mesh(
+        handleGeometry,
+        dark
+    );
+
+handle.rotation.z =
+    Math.PI / 2;
+
+handle.position.set(
+    2.0,
+    2.0,
+    0
+);
+
+addPart(
+    "Tay lái",
+    "Hệ thống điều khiển",
+    "Tay lái giúp người điều khiển thay đổi hướng chuyển động của xe.",
+    handle,
+    new THREE.Vector3(2.5, 3.5, 0)
+);
+
+
+// =========================================================
+// PHUỘC TRƯỚC
+// =========================================================
+
+const forkGeometry =
+    new THREE.CylinderGeometry(
+        0.10,
+        0.10,
+        2.5,
+        16
+    );
+
+const fork =
+    new THREE.Mesh(
+        forkGeometry,
+        metal
+    );
+
+fork.rotation.z =
+    -0.25;
+
+fork.position.set(
+    2.55,
+    0.9,
+    0
+);
+
+addPart(
+    "Phuộc trước",
+    "Hệ thống treo",
+    "Phuộc trước hấp thụ dao động từ mặt đường và giúp bánh trước hoạt động ổn định.",
+    fork,
+    new THREE.Vector3(3.5, 2.5, 0)
+);
+
+
+// =========================================================
+// ỐNG XẢ
+// =========================================================
+
+const exhaustGeometry =
+    new THREE.CylinderGeometry(
+        0.22,
+        0.22,
+        2.5,
+        20
+    );
+
+const exhaust =
+    new THREE.Mesh(
+        exhaustGeometry,
+        dark
+    );
+
+exhaust.rotation.z =
+    Math.PI / 2;
+
+exhaust.position.set(
+    -1.1,
+    -0.8,
+    0.7
+);
+
+addPart(
+    "Ống xả",
+    "Hệ thống xả",
+    "Ống xả dẫn khí thải từ động cơ ra ngoài và góp phần giảm tiếng ồn của dòng khí.",
+    exhaust,
+    new THREE.Vector3(-2, -2, 2)
+);
+
+
+// =========================================================
+// ĐÈN TRƯỚC
+// =========================================================
+
+const lampGeometry =
+    new THREE.SphereGeometry(
+        0.4,
+        20,
+        20
+    );
+
+const lamp =
+    new THREE.Mesh(
+        lampGeometry,
+        yellow
+    );
+
+lamp.position.set(
+    3.1,
+    1.5,
+    0
+);
+
+addPart(
+    "Đèn trước",
+    "Hệ thống điện",
+    "Đèn trước chiếu sáng phía trước xe và giúp tăng khả năng quan sát.",
+    lamp,
+    new THREE.Vector3(4, 3, 0)
+);
+
+
+// =========================================================
+// XÍCH
+// =========================================================
+
+const chainGeometry =
+    new THREE.TorusGeometry(
+        0.55,
+        0.06,
+        8,
+        32
+    );
+
+const chain =
+    new THREE.Mesh(
+        chainGeometry,
+        dark
+    );
+
+chain.rotation.y =
+    Math.PI / 2;
+
+chain.position.set(
+    -1.7,
+    -0.1,
+    0.65
+);
+
+addPart(
+    "Xích truyền động",
+    "Hệ thống truyền động",
+    "Xích truyền mô-men xoắn từ động cơ đến bánh sau.",
+    chain,
+    new THREE.Vector3(-3, -1, 2)
+);
+
+
+// =========================================================
+// GƯƠNG
+// =========================================================
+
+const mirrorGeometry =
+    new THREE.SphereGeometry(
+        0.3,
+        16,
+        16
+    );
+
+const mirror1 =
+    new THREE.Mesh(
+        mirrorGeometry,
+        black
+    );
+
+mirror1.position.set(
+    1.8,
+    2.8,
+    0.7
+);
+
+addPart(
+    "Gương chiếu hậu",
+    "Hệ thống an toàn",
+    "Gương chiếu hậu giúp người điều khiển quan sát phía sau xe.",
+    mirror1,
+    new THREE.Vector3(2, 4, 2)
+);
+
+
+// =========================================================
+// HỆ THỐNG PHANH
+// =========================================================
+
+const brakeGeometry =
+    new THREE.CylinderGeometry(
+        0.25,
+        0.25,
+        0.15,
+        20
+    );
+
+const brake =
+    new THREE.Mesh(
+        brakeGeometry,
+        metal
+    );
+
+brake.rotation.z =
+    Math.PI / 2;
+
+brake.position.set(
+    3.0,
+    0,
+    0.2
+);
+
+addPart(
+    "Cụm phanh",
+    "Hệ thống phanh",
+    "Hệ thống phanh tạo lực cản để giảm tốc độ hoặc dừng xe.",
+    brake,
+    new THREE.Vector3(4, -1, 1)
+);
+
+
+// =========================================================
+// HIỂN THỊ THÔNG TIN
+// =========================================================
+
+const info =
+    document.getElementById("info");
+
+const partName =
+    document.getElementById("partName");
+
+const partSystem =
+    document.getElementById("system");
+
+const partFunction =
+    document.getElementById("partFunction");
+
+
+// =========================================================
+// SLIDER THÁO RÃ
+// =========================================================
+
+const slider =
+    document.getElementById("explode");
+
+const percent =
+    document.getElementById("percent");
+
+function updateExplosion(value) {
+
+    const amount =
+        Number(value) / 100;
+
+    percent.textContent =
+        value;
+
+    parts.forEach(part => {
+
+        const original =
+            part.userData.originalPosition;
+
+        const explode =
+            part.userData.explodeVector;
+
+        part.position.x =
+            original.x +
+            explode.x * amount;
+
+        part.position.y =
+            original.y +
+            explode.y * amount;
+
+        part.position.z =
+            original.z +
+            explode.z * amount;
+
+    });
+}
+
+
+slider.addEventListener(
+    "input",
+    () => {
+        updateExplosion(
+            slider.value
+        );
+    }
+);
+
+
+// =========================================================
+// NÚT LẮP HOÀN CHỈNH
+// =========================================================
+
+document
+.getElementById("reset")
+.addEventListener(
+    "click",
+    () => {
+
+        slider.value = 0;
+
+        updateExplosion(0);
+
+    }
+);
+
+
+// =========================================================
+// NÚT THÁO HOÀN TOÀN
+// =========================================================
+
+document
+.getElementById("full")
+.addEventListener(
+    "click",
+    () => {
+
+        slider.value = 100;
+
+        updateExplosion(100);
+
+    }
+);
+
+
+// =========================================================
+// CLICK VÀO BỘ PHẬN
+// =========================================================
+
+const raycaster =
+    new THREE.Raycaster();
+
+const mouse =
+    new THREE.Vector2();
+
+
+renderer.domElement.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        const rect =
+            renderer.domElement.getBoundingClientRect();
+
+        mouse.x =
+            ((event.clientX - rect.left)
+            / rect.width) * 2 - 1;
+
+        mouse.y =
+            -((event.clientY - rect.top)
+            / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(
+            mouse,
+            camera
+        );
+
+        const hits =
+            raycaster.intersectObjects(
+                parts
+            );
+
+        if (hits.length > 0) {
+
+            const selected =
+                hits[0].object;
+
+            partName.textContent =
+                selected.userData.name;
+
+            partSystem.textContent =
+                selected.userData.system;
+
+            partFunction.textContent =
+                selected.userData.function;
+
+            info.style.display =
+                "block";
+        }
+
+    }
+);
+
+
+// =========================================================
+// RESPONSIVE
+// =========================================================
+
+function resize() {
+
+    const width =
+        canvas.clientWidth;
+
+    const height =
+        canvas.clientHeight;
+
+    camera.aspect =
+        width / height;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+        width,
+        height,
+        false
+    );
+}
+
+
+window.addEventListener(
+    "resize",
+    resize
+);
+
+
+// =========================================================
+// ANIMATION
+// =========================================================
+
+function animate() {
+
+    requestAnimationFrame(
+        animate
+    );
+
+    controls.update();
+
+    renderer.render(
+        scene,
+        camera
+    );
+}
+
+
+resize();
+
+animate();
+
+</script>
+
+</body>
+</html>
+"""
+
+components.html(
+    html_code,
+    height=780,
+    scrolling=False
+)
+
 
 st.markdown("---")
-st.markdown("<center>Phòng Nghiên cứu Kỹ thuật Hệ thống Phương tiện Động lực Quốc gia © 2026</center>", unsafe_allow_html=True)
+
+st.subheader("📚 Hướng dẫn sử dụng")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.markdown(
+        """
+        **🔧 Tháo rã**
+
+        Kéo thanh **Mức độ tháo rã**
+        sang phải để tách các bộ phận.
+        """
+    )
+
+with col2:
+    st.markdown(
+        """
+        **🔄 Lắp ráp**
+
+        Kéo thanh về **0%**
+        để đưa các bộ phận trở về vị trí ban đầu.
+        """
+    )
+
+with col3:
+    st.markdown(
+        """
+        **👆 Tìm hiểu**
+
+        Bấm vào một bộ phận
+        để xem tên, hệ thống và chức năng.
+        """
+    )
+
+st.info(
+    "Phiên bản hiện tại là mô hình 3D học tập. "
+    "Có thể mở rộng thêm ô tô, xe tải, máy đào và các hệ thống chi tiết hơn."
+)
